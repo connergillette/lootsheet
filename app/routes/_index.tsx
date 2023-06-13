@@ -1,5 +1,8 @@
 import type { V2_MetaFunction } from "@remix-run/node";
 import { Form } from '@remix-run/react'
+import { useState } from 'react'
+import Note from '~/components/Note'
+import SectionHeader from '~/components/SectionHeader'
 
 export const meta: V2_MetaFunction = () => {
   return [
@@ -9,11 +12,42 @@ export const meta: V2_MetaFunction = () => {
 };
 
 export default function Index() {
+  const [searchQuery, setSearchQuery] = useState('')
+  
   return (
     <div className="w-full my-10">
       <Form>
-        <textarea className="rounded-md py-2 px-4 w-full bg-transparent focus:outline-none resize-none text-lg" autoFocus/>
+        <textarea className="rounded-md py-2 px-4 w-full bg-transparent focus:outline-none resize-none text-lg" autoFocus />
       </Form>
+      <div className="flex flex-col gap-6">
+        <div className={`bg-gray-100 ${searchQuery ? 'h-48' : 'h-10'} transition-height rounded-md overflow-hidden`}>
+          <input className={`rounded-md py-2 px-4 w-full bg-transparent focus:outline-none resize-none text-lg ${searchQuery ? 'bg-gray-200' : ''} transition`} placeholder="Search" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} autoFocus />
+          <div className="p-6">
+            <Note />
+            <Note />
+          </div>
+        </div>
+        <Note />
+        <Note />
+        <Note />
+        <Note />
+        <Note />
+        <Note />
+      </div>
+      {/* Keywords: "PP", "GP", "SP", "EP", "CP", "gold", "silver", etc. */}
+      {/* <SectionHeader>Currency</SectionHeader> */}
+
+      {/* Keywords: "gained", "found", "chest", "loot" */}
+      {/* <SectionHeader>Loot</SectionHeader> */}
+
+      {/* Somewhat of a catch-all */}
+      {/* <SectionHeader>Events</SectionHeader> */}
+      
+      {/* Keywords: "fought", "encountered", "attacked" */}
+      {/* <SectionHeader>Encounters</SectionHeader> */}
+
+      {/* Keywords: "learned", "found out", "researched", "told that" */}
+      {/* <SectionHeader>Information</SectionHeader> */}
     </div>
   );
 }
