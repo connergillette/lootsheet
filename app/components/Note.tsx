@@ -1,8 +1,19 @@
-export default function Note() {
+export interface NoteData {
+  id: number,
+  created_at: Date,
+  text: string,
+  inferred_type: string
+}
+
+interface Props {
+  data: NoteData
+}
+
+export default function Note({ data }: Props) {
   return (
-    <div className="w-full flex flex-col gap-2">
-      <span className="text-xs opacity-50">06/12/2023</span>
-      <span>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</span>
+    <div className="w-full flex flex-col gap-2 py-2 px-4">
+      <span className="text-xs opacity-50">{new Date(data.created_at).toDateString()}</span>
+      <span>{data.text}</span>
     </div>
   )
 }
