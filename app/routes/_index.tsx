@@ -68,14 +68,20 @@ export default function Index() {
   }
   
   return (
-    <div className="w-full my-10">
+    <div className="w-full">
       {error && <pre className="text-red-500">{error.toString()}</pre>}
       <Form method="post">
-        <input name="text" value={noteText} onChange={(e) => setNoteText(e.target.value)} className="rounded-md py-2 px-4 w-full max-w-full bg-transparent focus:outline-none resize-none text-lg h-20 whitespace-break-spaces" autoFocus />
+        <input name="text"
+          value={noteText}
+          onChange={(e) => setNoteText(e.target.value)}
+          className="rounded-md py-2 px-4 w-full max-w-full bg-transparent focus:outline-none resize-none text-lg h-20 whitespace-break-spaces"
+          placeholder="Write a note here."
+          autoFocus
+        />
       </Form>
       <div className="flex flex-col gap-6">
-        <div className={`bg-gray-100 ${searchQuery && !queryIsDirty ? 'h-72' : 'h-10'} ${searchResults.length == 0 ? 'max-h-32' : 'max-h-72'} transition-height rounded-md overflow-hidden`}>
-          <Form method="get">
+        <div className={`bg-gray-100 ${searchQuery && !queryIsDirty ? 'h-72' : 'h-12'} ${searchResults.length == 0 ? 'max-h-32' : 'max-h-72'} transition-height rounded-md overflow-hidden`}>
+          <Form method="get" className="flex">
             <input
               name="query" 
               value={searchQuery} 
@@ -84,15 +90,18 @@ export default function Index() {
               placeholder="Search" 
               autoFocus 
             />
+            <a href={`/${searchQuery}`}><button type="button" className={`bg-gray-600 text-white rounded-md px-4 py-2 m-1 whitespace-nowrap transition-opacity ${searchQuery ? 'opacity-100' : 'opacity-0'}`}>Go to page {'>'}</button></a>
           </Form>
           {
             !queryIsDirty && (
               <>
                 <div className="border-solid border-t-2 border-gray-200 mx-2"></div>
                 <div className="p-6 flex flex-col align-center h-64 overflow-scroll">
-                  { searchResults.length > 0 && searchResults.map((note: NoteData) => (
-                      <Note data={note} key={`searchResult-${note.id}`} query={searchQuery} />
-                    ))
+                  { searchResults.length > 0 && (
+                      searchResults.map((note: NoteData) => (
+                        <Note data={note} key={`searchResult-${note.id}`} query={searchQuery} />
+                      ))
+                    )
                   }
                   {
                     searchResults.length == 0 && (

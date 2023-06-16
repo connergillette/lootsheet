@@ -28,7 +28,11 @@ export default function App() {
         <Links />
       </head>
       <body className="font-['Caladea']">
-        <div className="w-8/12 mx-auto">
+        {/* TODO: Implement a useful navbar */}
+        {/* <div className="w-9/12 max-md:w-11/12 mx-auto mt-4">
+          <h1 className="font-bold">lootsheet</h1>
+        </div> */}
+        <div className="w-8/12 max-md:w-11/12 mx-auto">
           <Outlet />
         </div>
         <ScrollRestoration />
