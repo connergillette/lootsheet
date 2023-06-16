@@ -13,7 +13,7 @@ export const meta: V2_MetaFunction = () => {
   ];
 }
 
-export const action: ActionFunction = async ({ request }) => {
+export const action: ActionFunction = async ({ request, params }) => {
   const data = await request.formData()
 
   const text = data.get('text')
@@ -28,27 +28,44 @@ export const action: ActionFunction = async ({ request }) => {
   return noteResponse.error.message
 }
 
-export const loader: LoaderFunction = async () => {
+export const loader: LoaderFunction = async ({ request }) => {
+  const url = new URL(request.url)
+  const search = new URLSearchParams(url.search)
+  const query = search.get('query') || ''
+
   const notesResponse = await supabase.from('notes').select().order('id', { ascending: false })
 
   let notes = []
+  let searchResults = []
   if (!notesResponse.error) {
     notes = notesResponse.data
+
+    if (query) {
+      searchResults = notes.filter((note: NoteData) => note.text.includes(query))
+    }
   } else {
     return { error: notesResponse.error }
   }
-  return { notes: notes }
+  return { notes, searchResults, query }
 }
 
 export default function Index() {
-  const { notes } = useLoaderData()
+  const { notes, searchResults, query } = useLoaderData()
   const error = useActionData()
   const [noteText, setNoteText] = useState('')
-  const [searchQuery, setSearchQuery] = useState('')
+  const [searchQuery, setSearchQuery] = useState(query)
+  const [queryIsDirty, setQueryIsDirty] = useState(false)
 
   useEffect(() => {
     setNoteText('')
-  }, [notes])
+    setSearchQuery(query)
+    setQueryIsDirty(false)
+  }, [notes, query])
+
+  const updateQuery = (newQuery: string) => {
+    setSearchQuery(newQuery)
+    setQueryIsDirty(true)
+  }
   
   return (
     <div className="w-full my-10">
@@ -57,12 +74,35 @@ export default function Index() {
         <input name="text" value={noteText} onChange={(e) => setNoteText(e.target.value)} className="rounded-md py-2 px-4 w-full max-w-full bg-transparent focus:outline-none resize-none text-lg h-20 whitespace-break-spaces" autoFocus />
       </Form>
       <div className="flex flex-col gap-6">
-        <div className={`bg-gray-100 ${searchQuery ? 'h-48' : 'h-10'} transition-height rounded-md overflow-hidden`}>
-          <input className={`rounded-md py-2 px-4 w-full bg-transparent focus:outline-none resize-none text-lg ${searchQuery ? 'bg-gray-200' : ''} transition`} placeholder="Search" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} autoFocus />
-          <div className="p-6">
-            {/* <Note /> */}
-            {/* <Note /> */}
-          </div>
+        <div className={`bg-gray-100 ${searchQuery && !queryIsDirty ? 'h-72' : 'h-10'} ${searchResults.length == 0 ? 'max-h-32' : 'max-h-72'} transition-height rounded-md overflow-hidden`}>
+          <Form method="get">
+            <input
+              name="query" 
+              value={searchQuery} 
+              onChange={(e) => updateQuery(e.target.value)} 
+              className={`rounded-md py-2 px-4 w-full bg-transparent focus:outline-none resize-none text-lg ${!queryIsDirty ? 'bg-gray-200' : ''} transition`} 
+              placeholder="Search" 
+              autoFocus 
+            />
+          </Form>
+          {
+            !queryIsDirty && (
+              <>
+                <div className="border-solid border-t-2 border-gray-200 mx-2"></div>
+                <div className="p-6 flex flex-col align-center h-64 overflow-scroll">
+                  { searchResults.length > 0 && searchResults.map((note: NoteData) => (
+                      <Note data={note} key={`searchResult-${note.id}`} query={searchQuery} />
+                    ))
+                  }
+                  {
+                    searchResults.length == 0 && (
+                      <span className="text-gray-400 text-center w-full">No results found.</span>
+                    )
+                  }
+                </div>
+              </>
+            )
+          }
         </div>
         {
           notes && notes.map((note: NoteData) => (
