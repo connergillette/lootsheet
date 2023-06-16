@@ -5,6 +5,11 @@ export interface NoteData {
   inferred_type: string
 }
 
+export interface NewNote {
+  text: string,
+  inferred_type?: string
+}
+
 interface Props {
   data: NoteData
 }
