@@ -35,7 +35,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 
   const notesResponse = await supabase.from('notes').select().order('id', { ascending: false })
 
-  const categories = {
+  const categories : object = {
     currency: {
       terms: ['pp', 'gp', 'sp', 'ep', 'cp', 'platinum', 'gold', 'silver', 'electrum', 'copper'],
       notes: []
@@ -59,14 +59,15 @@ export const loader: LoaderFunction = async ({ request }) => {
   if (!notesResponse.error) {
     notes = notesResponse.data
 
-    const events = {
+    const events: { notes: NoteData[] } = {
       notes: []
     }
 
     // TODO: Consider case where a note matches multiple category keywords
     for (const note of notes) {
       let assignedCategory = false
-      for (const categoryName of Object.keys(categories)) {
+      const categoryNames : string[] = Object.keys(categories)
+      for (const categoryName of categoryNames) {
         const category = categories[categoryName]
         const words = note.text.toLowerCase().split(' ')
         console.log(category)
@@ -132,7 +133,7 @@ export default function Index() {
       </Form>
       {
         view === 'feed' && (
-          <div className="flex flex-col gap-6">
+          <div className="flex flex-col">
             <div className={`bg-gray-100 ${searchQuery && !queryIsDirty ? 'h-72' : 'h-12'} ${searchResults.length == 0 ? 'max-h-32' : 'max-h-72'} transition-height rounded-md overflow-hidden`}>
               <Form method="get" className="flex">
                 <input
