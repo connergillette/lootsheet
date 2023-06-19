@@ -13,12 +13,35 @@ export const meta: V2_MetaFunction = () => {
   ];
 }
 
+const categoryTerms : object = {
+  currency: ['pp', 'gp', 'sp', 'ep', 'cp', 'platinum', 'gold', 'silver', 'electrum', 'copper'],
+  loot: ['gained', 'found', 'chest', 'loot'],
+  encounter: ['fought', 'encountered', 'attacked', 'met with', 'talked with'],
+  information: ['learned', 'found out', 'researched', 'told that', 'is'],
+  event: []
+}
+
 export const action: ActionFunction = async ({ request, params }) => {
   const data = await request.formData()
 
   const text = data.get('text')
+
+  // TODO: Allow note to belong to multiple categories (e.g. currency + loot)
+  let inferredType = 'event'
+  const categories = Object.keys(categoryTerms)
+  for (const category of categories) {
+    for (const term of categoryTerms[category]) {
+      const words = text.toLowerCase().split(' ')
+      if (words.includes(term)) {
+        inferredType = category
+        break
+      }
+    }
+  }
+
   const note : NewNote = {
-    text: text?.toString() || ''
+    text: text?.toString() || '',
+    inferred_type: inferredType
   }
   const noteResponse = await supabase.from('notes').insert(note)
   if (!noteResponse.error) {
@@ -35,55 +58,17 @@ export const loader: LoaderFunction = async ({ request }) => {
 
   const notesResponse = await supabase.from('notes').select().order('id', { ascending: false })
 
-  const categories : object = {
-    currency: {
-      terms: ['pp', 'gp', 'sp', 'ep', 'cp', 'platinum', 'gold', 'silver', 'electrum', 'copper'],
-      notes: []
-    },
-    loot: {
-      terms: ['gained', 'found', 'chest', 'loot'],
-      notes: []
-    },
-    encounters: {
-      terms: ['fought', 'encountered', 'attacked', 'met with', 'talked with'],
-      notes: []
-    },
-    information: {
-      terms: ['learned', 'found out', 'researched', 'told that'],
-      notes: []
-    },
-  }
-
+  const categories = {}
   let notes = []
   let searchResults = []
   if (!notesResponse.error) {
     notes = notesResponse.data
 
-    const events: { notes: NoteData[] } = {
-      notes: []
-    }
+    const categoryNames = Object.keys(categoryTerms)
+    for (const category of categoryNames) {
 
-    // TODO: Consider case where a note matches multiple category keywords
-    for (const note of notes) {
-      let assignedCategory = false
-      const categoryNames : string[] = Object.keys(categories)
-      for (const categoryName of categoryNames) {
-        const category = categories[categoryName]
-        const words = note.text.toLowerCase().split(' ')
-        for (const term of category.terms) {
-          if (words.includes(term)) {
-            category.notes.push(note)
-            assignedCategory = true
-            break
-          }
-        }
-        if (assignedCategory) break
-      }
-      if (!assignedCategory) {
-        events.notes.push(note)
-      }
+      categories[category] = notes.filter((note) => note.inferred_type === category)
     }
-    categories.events = events
 
     if (query) {
       searchResults = notes.filter((note: NoteData) => note.text.includes(query))
@@ -112,7 +97,7 @@ export default function Index() {
     setSearchQuery(newQuery)
     setQueryIsDirty(true)
   }
-  
+
   return (
     <div className="w-full">
       <div className="flex justify-end gap-2 my-4">
@@ -180,15 +165,13 @@ export default function Index() {
               Object.keys(categories).map((categoryName: string) => {
                 const category = categories[categoryName]
                 return (
-                  <Section name={categoryName.toLocaleUpperCase()} items={category.notes} key={categoryName} />
+                  <Section name={categoryName.toLocaleUpperCase()} items={category} key={categoryName} />
                 )
               })
             }
           </div>
         )
       }
-      
-
     </div>
   );
 }

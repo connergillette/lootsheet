@@ -1,3 +1,11 @@
+const categoryColors : object = {
+  currency: 'bg-yellow-400',
+  loot: 'bg-orange-400',
+  encounter: 'bg-red-400',
+  information: 'bg-blue-400',
+  event: 'bg-gray-300',
+  general: 'bg-gray-300'
+}
 export interface NoteData {
   id: number,
   created_at: Date,
@@ -36,8 +44,7 @@ export default function Note({ data, query }: Props) {
     <div className="flex h-20">
       <div className={`
           w-2 rounded-md h-3/4 my-auto \
-          ${data.text.includes('GP') ? 'bg-yellow-400' : ''} \
-          ${data.text.includes('Fought') ? 'bg-red-400' : ''}
+          ${categoryColors[data.inferred_type]} \
       `}></div>
       <div
         // TODO: Implement better color-coding implementation based on category
