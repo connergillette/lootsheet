@@ -115,9 +115,9 @@ export default function Index() {
           autoFocus
         />
       </Form>
-      <div className="flex gap-5 h-full">
+      <div className="flex gap-5 h-full overflow-y-hidden">
         <div className="flex flex-col w-1/3">
-          <div className={`bg-gray-100 ${searchQuery && !queryIsDirty ? 'h-72' : 'h-20'} ${searchResults.length == 0 ? 'max-h-32' : 'max-h-72'} transition-height rounded-md overflow-hidden`}>
+          <div className={`bg-gray-100 ${searchQuery && !queryIsDirty ? 'h-[600px] pb-10' : 'h-24'} transition-height rounded-md overflow-hidden`}>
             <Form method="get" className="flex">
               <input
                 name="query" 
@@ -133,7 +133,7 @@ export default function Index() {
               !queryIsDirty && (
                 <>
                   <div className="border-solid border-t-2 border-gray-200 mx-2"></div>
-                  <div className="p-6 pt-2 flex flex-col align-center h-12 max-h-72 overflow-y-scroll no-scrollbar">
+                  <div className="p-6 pt-2 flex flex-col align-center h-full overflow-y-scroll no-scrollbar">
                     { searchResults.length > 0 && (
                         searchResults.map((note: NoteData) => (
                           <Note data={note} key={`searchResult-${note.id}`} query={searchQuery} />
@@ -153,7 +153,9 @@ export default function Index() {
           <div className="flex flex-col overflow-y-scroll no-scrollbar px-2">
             {
               notes && notes.map((note: NoteData) => (
-                <Note data={note} key={note.id} />
+                <div className="flex">
+                  <Note data={note} key={note.id} />
+                </div>
               ))
             }
           </div>
