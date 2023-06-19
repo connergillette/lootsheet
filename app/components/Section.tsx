@@ -8,12 +8,14 @@ interface Props {
 
 export default function Section({name, items}: Props) {
   return (
-    <div className="w-1/2 p-2 max-h-[400px]">
+    <div className="w-1/2 p-2 h-min">
       <SectionHeader>{name}</SectionHeader>
-      <div className="overflow-y-scroll max-h-full no-scrollbar">
+      <div className="flex flex-col overflow-y-scroll no-scrollbar pb-5 max-h-[400px]">
         {
           items.length > 0 && items.map((note: NoteData) => (
-            <Note data={note} key={`${note.id}`} />
+            <div className="flex" key={`${note.id}`}>
+              <Note data={note} />
+            </div>
           ))
         }
         {

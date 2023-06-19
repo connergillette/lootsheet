@@ -41,16 +41,16 @@ export default function Note({ data, query }: Props) {
   }
 
   return (
-    <div className="flex h-20">
+    <div className="flex">
       <div className={`
-          w-2 rounded-md h-3/4 my-auto \
+          flex w-2 rounded-md h-3/4 my-auto \
           ${categoryColors[data.inferred_type]} \
       `}></div>
       <div
         // TODO: Implement better color-coding implementation based on category
         className={`
           w-full flex flex-col gap-2 py-2 px-4 \
-          my-2 rounded-md \
+          my-2 rounded-md h-full \
         `}
       >
         <span className="text-xs opacity-50">{new Date(data.created_at).toDateString()}</span>

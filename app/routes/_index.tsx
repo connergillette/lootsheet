@@ -99,11 +99,12 @@ export default function Index() {
   }
 
   return (
-    <div className="w-full">
-      <div className="flex justify-end gap-2 my-4">
+    <div className="w-full h-screen pb-24">
+      {/* TODO: Repurpose this for the navbar */}
+      {/* <div className="flex justify-end gap-2 my-4">
         <button type="button" onClick={() => setView('feed')} className={`${view === 'feed' ? 'bg-gray-200' : 'hover:bg-gray-100'} rounded-md px-4 py-2 transition`}>Feed</button>
         <button type="button" onClick={() => setView('categories')} className={`${view === 'categories' ? 'bg-gray-200' : 'hover:bg-gray-100'} rounded-md px-4 py-2 transition`}>Categories</button>
-      </div>
+      </div> */}
       {error && <pre className="text-red-500">{error.toString()}</pre>}
       <Form method="post">
         <input name="text"
@@ -114,64 +115,60 @@ export default function Index() {
           autoFocus
         />
       </Form>
-      {
-        view === 'feed' && (
-          <div className="flex flex-col">
-            <div className={`bg-gray-100 ${searchQuery && !queryIsDirty ? 'h-72' : 'h-12'} ${searchResults.length == 0 ? 'max-h-32' : 'max-h-72'} transition-height rounded-md overflow-hidden`}>
-              <Form method="get" className="flex">
-                <input
-                  name="query" 
-                  value={searchQuery} 
-                  onChange={(e) => updateQuery(e.target.value)} 
-                  className={`rounded-md py-2 px-4 w-full bg-transparent focus:outline-none resize-none text-lg ${!queryIsDirty ? 'bg-gray-200' : ''} transition`} 
-                  placeholder="Search" 
-                  autoFocus 
-                />
-                <a href={`/${searchQuery}`}><button type="button" className={`bg-gray-600 text-white rounded-md px-4 py-2 m-1 whitespace-nowrap transition-opacity ${searchQuery ? 'opacity-100' : 'opacity-0'}`}>Go to page {'>'}</button></a>
-              </Form>
-              {
-                !queryIsDirty && (
-                  <>
-                    <div className="border-solid border-t-2 border-gray-200 mx-2"></div>
-                    <div className="p-6 flex flex-col align-center h-64 overflow-scroll">
-                      { searchResults.length > 0 && (
-                          searchResults.map((note: NoteData) => (
-                            <Note data={note} key={`searchResult-${note.id}`} query={searchQuery} />
-                          ))
-                        )
-                      }
-                      {
-                        searchResults.length == 0 && (
-                          <span className="text-gray-400 text-center w-full">No results found.</span>
-                        )
-                      }
-                    </div>
-                  </>
-                )
-              }
-            </div>
+      <div className="flex gap-5 h-full">
+        <div className="flex flex-col w-1/3">
+          <div className={`bg-gray-100 ${searchQuery && !queryIsDirty ? 'h-72' : 'h-20'} ${searchResults.length == 0 ? 'max-h-32' : 'max-h-72'} transition-height rounded-md overflow-hidden`}>
+            <Form method="get" className="flex">
+              <input
+                name="query" 
+                value={searchQuery} 
+                onChange={(e) => updateQuery(e.target.value)} 
+                className={`rounded-md py-2 px-4 w-full bg-transparent focus:outline-none resize-none text-lg ${!queryIsDirty ? 'bg-gray-200' : ''} transition`} 
+                placeholder="Search" 
+                autoFocus 
+              />
+              <a href={`/${searchQuery}`} className={`bg-gray-600 text-white rounded-md px-4 py-2 m-1 whitespace-nowrap transition-opacity ${searchQuery ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}><button type="button">Go to page {'>'}</button></a>
+            </Form>
+            {
+              !queryIsDirty && (
+                <>
+                  <div className="border-solid border-t-2 border-gray-200 mx-2"></div>
+                  <div className="p-6 pt-2 flex flex-col align-center h-12 max-h-72 overflow-y-scroll no-scrollbar">
+                    { searchResults.length > 0 && (
+                        searchResults.map((note: NoteData) => (
+                          <Note data={note} key={`searchResult-${note.id}`} query={searchQuery} />
+                        ))
+                      )
+                    }
+                    {
+                      searchResults.length == 0 && (
+                        <span className="text-gray-400 text-center w-full mt-3">No results found.</span>
+                      )
+                    }
+                  </div>
+                </>
+              )
+            }
+          </div>
+          <div className="flex flex-col overflow-y-scroll no-scrollbar px-2">
             {
               notes && notes.map((note: NoteData) => (
                 <Note data={note} key={note.id} />
               ))
             }
           </div>
-        )
-      }
-      {
-        view === 'categories' && (
-          <div className="flex flex-wrap">
-            {
-              Object.keys(categories).map((categoryName: string) => {
-                const category = categories[categoryName]
-                return (
-                  <Section name={categoryName.toLocaleUpperCase()} items={category} key={categoryName} />
-                )
-              })
-            }
-          </div>
-        )
-      }
+        </div>
+        <div className="flex flex-wrap h-min w-2/3">
+          {
+            Object.keys(categories).map((categoryName: string) => {
+              const category = categories[categoryName]
+              return (
+                <Section name={categoryName.toLocaleUpperCase()} items={category} key={categoryName} />
+              )
+            })
+          }
+        </div>
+      </div>
     </div>
   );
 }
