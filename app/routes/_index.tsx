@@ -70,10 +70,8 @@ export const loader: LoaderFunction = async ({ request }) => {
       for (const categoryName of categoryNames) {
         const category = categories[categoryName]
         const words = note.text.toLowerCase().split(' ')
-        console.log(category)
         for (const term of category.terms) {
           if (words.includes(term)) {
-            console.log(categoryName, term, words)
             category.notes.push(note)
             assignedCategory = true
             break

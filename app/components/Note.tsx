@@ -33,17 +33,22 @@ export default function Note({ data, query }: Props) {
   }
 
   return (
-    <div
-      // TODO: Implement better color-coding implementation based on category
-      className={`
-        w-full flex flex-col gap-2 py-2 px-4 \
-        my-2 rounded-md border-solid border-l-4 \
-        ${data.text.includes('GP') ? 'border-yellow-400' : ''} \
-        ${data.text.includes('Fought') ? 'border-red-400' : ''}
-      `}
-    >
-      <span className="text-xs opacity-50">{new Date(data.created_at).toDateString()}</span>
-      <span>{highlightedText}</span>
+    <div className="flex h-20">
+      <div className={`
+          w-2 rounded-md h-3/4 my-auto \
+          ${data.text.includes('GP') ? 'bg-yellow-400' : ''} \
+          ${data.text.includes('Fought') ? 'bg-red-400' : ''}
+      `}></div>
+      <div
+        // TODO: Implement better color-coding implementation based on category
+        className={`
+          w-full flex flex-col gap-2 py-2 px-4 \
+          my-2 rounded-md \
+        `}
+      >
+        <span className="text-xs opacity-50">{new Date(data.created_at).toDateString()}</span>
+        <span>{highlightedText}</span>
+      </div>
     </div>
   )
 }

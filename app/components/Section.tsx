@@ -8,9 +8,9 @@ interface Props {
 
 export default function Section({name, items}: Props) {
   return (
-    <div className="w-1/2 p-2 h-[400px]">
+    <div className="w-1/2 p-2 max-h-[400px]">
       <SectionHeader>{name}</SectionHeader>
-      <div className="overflow-y-scroll max-h-full">
+      <div className="overflow-y-scroll max-h-full no-scrollbar">
         {
           items.length > 0 && items.map((note: NoteData) => (
             <Note data={note} key={`${note.id}`} />
