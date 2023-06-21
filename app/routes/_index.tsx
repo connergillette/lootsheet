@@ -71,7 +71,7 @@ export const loader: LoaderFunction = async ({ request }) => {
       categories[category] = notes.filter((note) => note.inferred_type === category)
     }
 
-    if (query) {
+    if (queryParsed) {
       searchResults = notes.filter((note: NoteData) => note.text.includes(queryParsed))
     }
   } else {
@@ -88,7 +88,7 @@ export default function Index() {
   const [noteText, setNoteText] = useState('')
   const [searchQuery, setSearchQuery] = useState(queryParsed)
   const [queryIsDirty, setQueryIsDirty] = useState(false)
-  const [view, setView] = useState('feed')
+  // const [view, setView] = useState('feed')
 
   useEffect(() => {
     setNoteText('')
@@ -112,11 +112,11 @@ export default function Index() {
           placeholder="Write a note here."
           autoFocus
         />
-        <button type="submit" className={`bg-gray-600 text-white rounded-md px-4 py-2 m-1 h-min whitespace-nowrap transition-opacity ${noteText ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>Save Note</button>
+        <button type="submit" className={`bg-gray-600 text-white rounded-md px-4 max-md:px-2 py-2 max-md:py-1 m-1 h-min whitespace-nowrap transition-opacity ${noteText ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>Save Note</button>
       </Form>
-      <div className="flex max-md:flex-col h-full gap-5 overflow-y-hidden">
+      <div className="flex max-md:flex-col h-full my-2 gap-5 overflow-y-hidden">
         <div className="flex flex-col w-1/3 rounded-md max-md:w-full">
-          <div className={`bg-gray-100 ${searchQuery && !queryIsDirty ? 'h-[600px]' : 'h-[100px] max-md:h-[50px]'} transition-height rounded-md overflow-hidden`}>
+          <div className={`bg-gray-100 ${searchQuery && !queryIsDirty ? 'h-[600px] max-md:h-[400px]' : 'h-[120px] max-md:h-[50px]'} transition-height rounded-md overflow-hidden`}>
             <Form method="get" className="flex">
               <input
                 name="query" 
@@ -127,19 +127,26 @@ export default function Index() {
                 autoComplete='off'
                 autoFocus 
               />
-              <a href={`/${query}`} className={`bg-gray-600 text-white rounded-md px-4 py-2 m-1 whitespace-nowrap transition-opacity ${searchQuery ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
-                <button type="button">Go to page {'>'}</button>
+              <a href={`/${searchQuery.split(' ').join('+')}`} className={`bg-gray-600 text-white rounded-md px-4 max-md:px-2 py-2 max-md:py-1 m-1 whitespace-nowrap transition-opacity ${searchQuery ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+                Go to page {'>'}
               </a>
             </Form>
             {
               searchQuery && !queryIsDirty && (
                 <>
                   <div className="border-solid border-t-2 border-gray-200 mx-2"></div>
-                  <div className="p-6 pt-2 flex flex-col align-center h-full overflow-y-scroll no-scrollbar">
+                  <div className="p-6 pt-2 flex flex-col align-center h-full pb-20 overflow-y-scroll no-scrollbar">
                     { searchResults.length > 0 && (
                         searchResults.map((note: NoteData) => (
-                          <Note data={note} key={`searchResult-${note.id}`} query={searchQuery} />
+                          <div className="flex" key={`searchResult-${note.id}`}>
+                            <Note data={note} query={searchQuery} />
+                          </div>
                         ))
+                      )
+                    }
+                    {
+                      (searchResults && searchResults.length > 5) && (
+                        <div className="text-gray-300 text-center w-full">(End of results)</div>
                       )
                     }
                     {
@@ -169,7 +176,7 @@ export default function Index() {
             </div>
           </div>
         </div>
-        <div className="flex flex-wrap h-min w-2/3 max-md:w-full bg-gray-100 rounded-lg p-5">
+        <div className="flex flex-wrap h-full w-2/3 max-md:w-full bg-gray-100 rounded-lg p-5">
           {
             Object.keys(categories).map((categoryName: string) => {
               const category = categories[categoryName]

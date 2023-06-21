@@ -1,4 +1,4 @@
-const categoryColors : object = {
+export const categoryColors : object = {
   currency: 'bg-yellow-400',
   loot: 'bg-orange-400',
   encounter: 'bg-red-400',

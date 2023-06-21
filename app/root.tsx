@@ -1,5 +1,5 @@
-import { cssBundleHref } from "@remix-run/css-bundle";
-import type { LinksFunction } from "@remix-run/node";
+import { cssBundleHref } from "@remix-run/css-bundle"
+import type { LinksFunction } from "@remix-run/node"
 import {
   Links,
   LiveReload,
@@ -7,8 +7,10 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
-} from "@remix-run/react";
-import styles from "./tailwind.css";
+} from "@remix-run/react"
+import styles from "./tailwind.css"
+
+import Nav from './components/Nav'
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: styles },
@@ -27,15 +29,10 @@ export default function App() {
         <Meta />
         <Links />
       </head>
-      <body className="font-['Caladea']">
-        <div className="w-8/12 max-md:w-11/12 mx-auto mt-4 max-md:mt-2 h-[calc(95dvh)] max-md:h-full overflow-hidden">
-          <div className="flex mx-auto justify-center align-middle">
-            <div className="font-bold text-2xl align-middle py-2">lootsheet</div>
-            <div className="flex justify-end gap-2 grow">
-              <button type="button" className={`hover:bg-gray-100 rounded-md px-4 py-2 transition`}>Feed</button>
-              <button type="button" className={`hover:bg-gray-100 rounded-md px-4 py-2 transition`}>Categories</button>
-            </div>
-          </div>
+      <body className="font-['Caladea'] overflow-hidden max-md:overflow-scroll">
+        {/* TODO: Formalize single-page layout rules */}
+        <div className="w-8/12 max-md:w-11/12 mx-auto mt-4 max-md:mt-2 h-[calc(100dvh)] pb-[80px] max-md:pb-0 max-md:h-full overflow-hidden">
+          <Nav />
           <Outlet />
         </div>
         <ScrollRestoration />
