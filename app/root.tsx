@@ -28,11 +28,14 @@ export default function App() {
         <Links />
       </head>
       <body className="font-['Caladea']">
-        {/* TODO: Implement a useful navbar */}
-        {/* <div className="w-9/12 max-md:w-11/12 mx-auto mt-4">
-          <h1 className="font-bold">lootsheet</h1>
-        </div> */}
-        <div className="w-8/12 max-md:w-11/12 mx-auto">
+        <div className="w-8/12 max-md:w-11/12 mx-auto mt-4 max-md:mt-2 h-[calc(95dvh)] max-md:h-full overflow-hidden">
+          <div className="flex mx-auto justify-center align-middle">
+            <div className="font-bold text-2xl align-middle py-2">lootsheet</div>
+            <div className="flex justify-end gap-2 grow">
+              <button type="button" className={`hover:bg-gray-100 rounded-md px-4 py-2 transition`}>Feed</button>
+              <button type="button" className={`hover:bg-gray-100 rounded-md px-4 py-2 transition`}>Categories</button>
+            </div>
+          </div>
           <Outlet />
         </div>
         <ScrollRestoration />

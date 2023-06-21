@@ -18,7 +18,7 @@ const categoryTerms : object = {
   loot: ['gained', 'found', 'chest', 'loot'],
   encounter: ['fought', 'encountered', 'attacked', 'met with', 'talked with'],
   information: ['learned', 'found out', 'researched', 'told that', 'is'],
-  event: []
+  general: []
 }
 
 export const action: ActionFunction = async ({ request, params }) => {
@@ -102,21 +102,17 @@ export default function Index() {
   }
 
   return (
-    <div className="w-full h-screen max-md:h-full pb-24">
-      {/* TODO: Repurpose this for the navbar */}
-      {/* <div className="flex justify-end gap-2 my-4">
-        <button type="button" onClick={() => setView('feed')} className={`${view === 'feed' ? 'bg-gray-200' : 'hover:bg-gray-100'} rounded-md px-4 py-2 transition`}>Feed</button>
-        <button type="button" onClick={() => setView('categories')} className={`${view === 'categories' ? 'bg-gray-200' : 'hover:bg-gray-100'} rounded-md px-4 py-2 transition`}>Categories</button>
-      </div> */}
+    <div className="w-full h-full max-md:h-full pb-24">
       {error && <pre className="text-red-500">{error.toString()}</pre>}
-      <Form method="post">
-        <input name="text"
+      <Form method="post" className="flex">
+        <textarea name="text"
           value={noteText}
           onChange={(e) => setNoteText(e.target.value)}
           className="rounded-md py-2 px-4 w-full max-w-full bg-transparent focus:outline-none resize-none text-lg h-20 whitespace-break-spaces"
           placeholder="Write a note here."
           autoFocus
         />
+        <button type="submit" className={`bg-gray-600 text-white rounded-md px-4 py-2 m-1 h-min whitespace-nowrap transition-opacity ${noteText ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>Save Note</button>
       </Form>
       <div className="flex max-md:flex-col h-full gap-5 overflow-y-hidden">
         <div className="flex flex-col w-1/3 rounded-md max-md:w-full">
@@ -127,7 +123,8 @@ export default function Index() {
                 value={searchQuery} 
                 onChange={(e) => updateQuery(e.target.value)} 
                 className={`rounded-md py-2 px-4 w-full bg-transparent focus:outline-none resize-none text-lg ${!queryIsDirty ? 'bg-gray-200' : ''} transition`} 
-                placeholder="Search" 
+                placeholder="Search"
+                autoComplete='off'
                 autoFocus 
               />
               <a href={`/${query}`} className={`bg-gray-600 text-white rounded-md px-4 py-2 m-1 whitespace-nowrap transition-opacity ${searchQuery ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>

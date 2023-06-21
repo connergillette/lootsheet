@@ -37,7 +37,7 @@ export default function Topic() {
   return (
     <div className="flex flex-col gap-6 px-2 my-5">
       <h1 className="text-2xl">{topicName}</h1>
-      <div className="flex gap-4">
+      <div className="flex max-md:flex-col gap-4">
         {error && (
           <div className="text-red-400 text-lg h-full w-full text-center justify-center my-20">
             <span>There was a problem fetching notes for this topic.</span>
@@ -46,16 +46,17 @@ export default function Topic() {
             </span>
           </div>
         )}
-        {!error && (
+        {!error && 
           <>
-            <div className="flex flex-col w-1/2 rounded-md">
-              {notes.map((note: NoteData) => <div className="flex"><Note data={note} key={note.id}/></div>)}
-            </div>
-            <div>
+            <div className="w-2/3 max-md:w-full min-h-[200px]">
               <SectionHeader>Summary</SectionHeader>
             </div>
+            <div className="flex flex-col w-1/3 max-md:w-full rounded-md">
+              <SectionHeader>Notes</SectionHeader>
+              {notes.map((note: NoteData) => <div className="flex"><Note data={note} key={note.id}/></div>)}
+            </div>
           </>
-        )}
+        }
       </div>
     </div>
   )
