@@ -161,6 +161,11 @@ export default function Index() {
                   </div>
                 ))
               }
+              {
+                (notes && notes.length > 10) && (
+                  <div className="text-gray-300 text-center w-full">(End of notes)</div>
+                )
+              }
             </div>
           </div>
         </div>

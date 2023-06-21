@@ -27,8 +27,13 @@ export default function Topic() {
   return (
     <div className="flex flex-col gap-6 px-2 my-5">
       <h1 className="text-2xl">{topic}</h1>
-      <div>
-        {notes.map((note: NoteData) => <Note data={note} key={note.id}/>)}
+      <div className="flex gap-4">
+        <div className="w-1/2 bg-gray-100 rounded-md">
+          {notes.map((note: NoteData) => <Note data={note} key={note.id}/>)}
+        </div>
+        <div>
+          <h2 className="text-lg">Summary</h2>
+        </div>
       </div>
     </div>
   )

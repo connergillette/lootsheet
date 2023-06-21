@@ -21,6 +21,11 @@ export default function Section({name, items}: Props) {
         {
           items.length === 0 && <div className="text-gray-400 text-center px-auto py-10">No items to show.</div>
         }
+        {
+          (items && items.length > 5) && (
+            <div className="text-gray-300 text-center w-full">(End of section)</div>
+          )
+        }
       </div>
     </div>
   )
