@@ -13,7 +13,6 @@ export const loader: LoaderFunction = async ({ params }: LoaderArgs) => {
   let notes : NoteData[] = []
   if (topic) {
     const notesResponse = await supabase.from('notes').select().textSearch('text', topic)
-    console.log(notesResponse)
     if (!notesResponse.error) {
       notes = notesResponse.data
     }

@@ -99,7 +99,7 @@ export default function Index() {
   }
 
   return (
-    <div className="w-full h-screen pb-24">
+    <div className="w-full h-screen max-md:h-full pb-24">
       {/* TODO: Repurpose this for the navbar */}
       {/* <div className="flex justify-end gap-2 my-4">
         <button type="button" onClick={() => setView('feed')} className={`${view === 'feed' ? 'bg-gray-200' : 'hover:bg-gray-100'} rounded-md px-4 py-2 transition`}>Feed</button>
@@ -115,9 +115,9 @@ export default function Index() {
           autoFocus
         />
       </Form>
-      <div className="flex gap-5 h-full overflow-y-hidden">
-        <div className="flex flex-col w-1/3">
-          <div className={`bg-gray-100 ${searchQuery && !queryIsDirty ? 'h-[600px] pb-10' : 'h-24'} transition-height rounded-md overflow-hidden`}>
+      <div className="flex max-md:flex-col h-full gap-5 overflow-y-hidden">
+        <div className="flex flex-col w-1/3 rounded-md max-md:w-full">
+          <div className={`bg-gray-100 ${searchQuery && !queryIsDirty ? 'h-[600px]' : 'h-min'} transition-height rounded-md`}>
             <Form method="get" className="flex">
               <input
                 name="query" 
@@ -127,10 +127,12 @@ export default function Index() {
                 placeholder="Search" 
                 autoFocus 
               />
-              <a href={`/${searchQuery}`} className={`bg-gray-600 text-white rounded-md px-4 py-2 m-1 whitespace-nowrap transition-opacity ${searchQuery ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}><button type="button">Go to page {'>'}</button></a>
+              <a href={`/${searchQuery}`} className={`bg-gray-600 text-white rounded-md px-4 py-2 m-1 whitespace-nowrap transition-opacity ${searchQuery ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+                <button type="button">Go to page {'>'}</button>
+              </a>
             </Form>
             {
-              !queryIsDirty && (
+              searchQuery && !queryIsDirty && (
                 <>
                   <div className="border-solid border-t-2 border-gray-200 mx-2"></div>
                   <div className="p-6 pt-2 flex flex-col align-center h-full overflow-y-scroll no-scrollbar">
@@ -150,17 +152,19 @@ export default function Index() {
               )
             }
           </div>
-          <div className="flex flex-col overflow-y-scroll no-scrollbar px-2">
-            {
-              notes && notes.map((note: NoteData) => (
-                <div className="flex">
-                  <Note data={note} key={note.id} />
-                </div>
-              ))
-            }
+          <div className="flex flex-col overflow-y-scroll no-scrollbar px-2 max-md:max-h-[300px] mt-2">
+            <div>
+              {
+                notes && notes.map((note: NoteData) => (
+                  <div className="flex">
+                    <Note data={note} key={note.id} />
+                  </div>
+                ))
+              }
+            </div>
           </div>
         </div>
-        <div className="flex flex-wrap h-min w-2/3">
+        <div className="flex flex-wrap h-min w-2/3 max-md:w-full bg-gray-100 rounded-lg p-5">
           {
             Object.keys(categories).map((categoryName: string) => {
               const category = categories[categoryName]
