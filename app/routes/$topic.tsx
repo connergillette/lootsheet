@@ -23,21 +23,22 @@ export const loader: LoaderFunction = async ({ params }: LoaderArgs) => {
 
       // TODO: Implement stored summary system to only generate a summary when the topic notes change
       // summary = await fetchTopicSummary(notes.map((note) => note.text))
+      summary = notes.map((note) => note.text).join(' ')
     } else {
       return { topic, error: notesResponse.error }
     }
     // TODO: Implement error handling here
   }
   
-  return { topicName, notes }
+  return { topicName, notes, summary }
 }
 
 export default function Topic() {
-  const { topicName, notes, error } = useLoaderData()
+  const { topicName, notes, summary, error } = useLoaderData()
   return (
     <div className="flex flex-col gap-6 px-2 my-5">
       <h1 className="text-2xl">{topicName}</h1>
-      <div className="flex max-md:flex-col gap-4">
+      <div className="flex max-md:flex-col">
         {error && (
           <div className="text-red-400 text-lg h-full w-full text-center justify-center my-20">
             <span>There was a problem fetching notes for this topic.</span>
@@ -50,6 +51,7 @@ export default function Topic() {
           <>
             <div className="w-2/3 max-md:w-full min-h-[200px]">
               <SectionHeader>Summary</SectionHeader>
+              <p className="text-lg w-3/4">{summary}</p>
             </div>
             <div className="flex flex-col w-1/3 max-md:w-full rounded-md">
               <SectionHeader>Notes</SectionHeader>
