@@ -1,4 +1,4 @@
-import { ActionFunction, LoaderFunction, V2_MetaFunction, redirect } from "@remix-run/node";
+import { ActionFunction, LoaderFunction, V2_MetaFunction, json, redirect } from "@remix-run/node";
 import { Form, useActionData, useLoaderData } from '@remix-run/react'
 import { useEffect, useState } from 'react'
 import Note, { NewNote } from '~/components/Note'
@@ -55,6 +55,7 @@ export const loader: LoaderFunction = async ({ request }) => {
   const url = new URL(request.url)
   const search = new URLSearchParams(url.search)
   const query = search.get('query') || ''
+  const queryParsed = query.split('+').join(' ')
 
   const notesResponse = await supabase.from('notes').select().order('id', { ascending: false })
 
@@ -71,27 +72,29 @@ export const loader: LoaderFunction = async ({ request }) => {
     }
 
     if (query) {
-      searchResults = notes.filter((note: NoteData) => note.text.includes(query))
+      searchResults = notes.filter((note: NoteData) => note.text.includes(queryParsed))
     }
   } else {
     return { error: notesResponse.error }
   }
-  return { notes, searchResults, query, categories }
+  return json({ notes, searchResults, query, queryParsed, categories }, {
+    "Cache-Control": "public, s-maxage=60",
+  })
 }
 
 export default function Index() {
-  const { notes, searchResults, query, categories } = useLoaderData()
+  const { notes, searchResults, query, queryParsed, categories } = useLoaderData()
   const error = useActionData()
   const [noteText, setNoteText] = useState('')
-  const [searchQuery, setSearchQuery] = useState(query)
+  const [searchQuery, setSearchQuery] = useState(queryParsed)
   const [queryIsDirty, setQueryIsDirty] = useState(false)
   const [view, setView] = useState('feed')
 
   useEffect(() => {
     setNoteText('')
-    setSearchQuery(query)
+    setSearchQuery(queryParsed)
     setQueryIsDirty(false)
-  }, [notes, query])
+  }, [notes, queryParsed])
 
   const updateQuery = (newQuery: string) => {
     setSearchQuery(newQuery)
@@ -117,7 +120,7 @@ export default function Index() {
       </Form>
       <div className="flex max-md:flex-col h-full gap-5 overflow-y-hidden">
         <div className="flex flex-col w-1/3 rounded-md max-md:w-full">
-          <div className={`bg-gray-100 ${searchQuery && !queryIsDirty ? 'h-[600px]' : 'h-min'} transition-height rounded-md`}>
+          <div className={`bg-gray-100 ${searchQuery && !queryIsDirty ? 'h-[600px]' : 'h-[100px] max-md:h-[50px]'} transition-height rounded-md overflow-hidden`}>
             <Form method="get" className="flex">
               <input
                 name="query" 
@@ -127,7 +130,7 @@ export default function Index() {
                 placeholder="Search" 
                 autoFocus 
               />
-              <a href={`/${searchQuery}`} className={`bg-gray-600 text-white rounded-md px-4 py-2 m-1 whitespace-nowrap transition-opacity ${searchQuery ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+              <a href={`/${query}`} className={`bg-gray-600 text-white rounded-md px-4 py-2 m-1 whitespace-nowrap transition-opacity ${searchQuery ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
                 <button type="button">Go to page {'>'}</button>
               </a>
             </Form>
