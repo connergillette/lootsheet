@@ -97,7 +97,6 @@ export const loader: LoaderFunction = async ({ request }: LoaderArgs) => {
 
     const categoryNames = Object.keys(categoryTerms)
     for (const category of categoryNames) {
-
       categories[category] = notes.filter((note) => note.inferred_type === category)
     }
 
