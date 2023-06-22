@@ -86,28 +86,7 @@ export default function App() {
       <body className="font-['Caladea'] overflow-hidden max-md:overflow-scroll">
         {/* TODO: Formalize single-page layout rules */}
         <div className="w-8/12 max-md:w-11/12 mx-auto mt-4 max-md:mt-2 h-[calc(100dvh)] pb-[80px] max-md:pb-0 max-md:h-full overflow-hidden">
-          {/* <Nav session={session} /> */}
-          <div className="flex mx-auto align-middle">
-            <a href="/" onMouseEnter={onHover} onMouseLeave={() => setHoverColor('')}>
-              <div className={`font-bold text-2xl align-middle py-2 ${hoverColor ? hoverColor : ''} transition`}>lootsheet</div>
-            </a>
-            {/* TODO: Determine navbar buttons */}
-            <div className="flex justify-end gap-2 grow">
-              {
-                !session && (
-                  <>
-                    <a href="/login" className={`hover:bg-gray-100 rounded-md px-4 py-2 transition h-min`}>Log in</a>
-                    <a href="/register" className={`hover:bg-gray-500 bg-gray-600 text-white rounded-md px-4 py-2 transition h-min`}>Sign up</a>
-                  </>
-                )
-              }
-              {
-                session && (
-                  <button type="button" className={`hover:bg-gray-100 rounded-md px-4 py-2 transition h-min`} onClick={() => supabase.auth.signOut()}>Log out</button>
-                )
-              }
-            </div>
-          </div>
+          <Nav session={session} signOut={() => supabase.auth.signOut()} />
           <Outlet context={{ supabase, session }} />
         </div>
         <ScrollRestoration />

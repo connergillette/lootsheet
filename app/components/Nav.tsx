@@ -2,10 +2,11 @@ import { Form } from '@remix-run/react'
 import { useState } from 'react'
 
 interface Props {
+  signOut: Function,
   session?: object
 }
 
-export default function Nav({ session }: Props) {
+export default function Nav({ signOut, session }: Props) {
   const [hoverColor, setHoverColor] = useState('')
   const colors : string[] = ['text-yellow-400', 'text-orange-400', 'text-red-400', 'text-blue-400', 'text-gray-300']
 
@@ -30,9 +31,7 @@ export default function Nav({ session }: Props) {
         }
         {
           session && (
-            <Form method="post" action="/logout">
-              <button type="submit" className={`hover:bg-gray-100 rounded-md px-4 py-2 transition h-min`}>Log out</button>
-            </Form>
+            <button className={`hover:bg-gray-100 rounded-md px-4 py-2 transition h-min`} onClick={() => signOut()}>Log out</button>
           )
         }
       </div>
