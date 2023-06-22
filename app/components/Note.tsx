@@ -15,7 +15,8 @@ export interface NoteData {
 
 export interface NewNote {
   text: string,
-  inferred_type?: string
+  user_id: string,
+  inferred_type?: string,
 }
 
 interface Props {

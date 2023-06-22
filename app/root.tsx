@@ -1,16 +1,21 @@
 import { cssBundleHref } from "@remix-run/css-bundle"
-import type { LinksFunction } from "@remix-run/node"
+import { LinksFunction, LoaderArgs, json } from "@remix-run/node"
 import {
+  Form,
   Links,
   LiveReload,
   Meta,
   Outlet,
   Scripts,
   ScrollRestoration,
+  useLoaderData,
+  useRevalidator,
 } from "@remix-run/react"
 import styles from "./tailwind.css"
+import { createBrowserClient, createServerClient } from '@supabase/auth-helpers-remix'
 
 import Nav from './components/Nav'
+import { useEffect, useState } from 'react'
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: styles },
@@ -18,9 +23,58 @@ export const links: LinksFunction = () => [
   { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossOrigin: 'anonymous'},
   { rel: "stylesheet", href: 'https://fonts.googleapis.com/css2?family=Caladea:ital,wght@0,400;0,700;1,400;1,700&display=swap' },
   ...(cssBundleHref ? [{ rel: "stylesheet", href: cssBundleHref }] : []),
-];
+]
+
+export const loader = async ({ request }: LoaderArgs) => {
+  const response = new Response()
+
+  const supabase = createServerClient(process.env.SUPABASE_URL || '', process.env.SUPABASE_KEY || '', {
+    request,
+    response,
+  })
+
+  const {
+    data: { session },
+  } = await supabase.auth.getSession()
+
+  const env = {
+    SUPABASE_URL: process.env.SUPABASE_URL,
+    SUPABASE_KEY: process.env.SUPABASE_KEY,
+  }
+
+  return json({ env, session }, { headers: response.headers })
+}
 
 export default function App() {
+  const [hoverColor, setHoverColor] = useState('')
+
+  const { env, session } = useLoaderData()
+  const { revalidate } = useRevalidator()
+  const [supabase] = useState(() => createBrowserClient(env.SUPABASE_URL, env.SUPABASE_KEY))
+
+  const serverAccessToken = session?.access_token
+
+  const colors : string[] = ['text-yellow-400', 'text-orange-400', 'text-red-400', 'text-blue-400', 'text-gray-300']
+
+  const onHover = () => {
+    setHoverColor(colors[(Math.floor(Math.random() * 5))])
+  }
+
+  useEffect(() => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      if (session?.access_token !== serverAccessToken) {
+        // server and client are out of sync.
+        revalidate()
+      }
+    })
+
+    return () => {
+      subscription.unsubscribe()
+    }
+  }, [serverAccessToken, supabase, revalidate])
+
   return (
     <html lang="en">
       <head>
@@ -32,8 +86,29 @@ export default function App() {
       <body className="font-['Caladea'] overflow-hidden max-md:overflow-scroll">
         {/* TODO: Formalize single-page layout rules */}
         <div className="w-8/12 max-md:w-11/12 mx-auto mt-4 max-md:mt-2 h-[calc(100dvh)] pb-[80px] max-md:pb-0 max-md:h-full overflow-hidden">
-          <Nav />
-          <Outlet />
+          {/* <Nav session={session} /> */}
+          <div className="flex mx-auto align-middle">
+            <a href="/" onMouseEnter={onHover} onMouseLeave={() => setHoverColor('')}>
+              <div className={`font-bold text-2xl align-middle py-2 ${hoverColor ? hoverColor : ''} transition`}>lootsheet</div>
+            </a>
+            {/* TODO: Determine navbar buttons */}
+            <div className="flex justify-end gap-2 grow">
+              {
+                !session && (
+                  <>
+                    <a href="/login" className={`hover:bg-gray-100 rounded-md px-4 py-2 transition h-min`}>Log in</a>
+                    <a href="/register" className={`hover:bg-gray-500 bg-gray-600 text-white rounded-md px-4 py-2 transition h-min`}>Sign up</a>
+                  </>
+                )
+              }
+              {
+                session && (
+                  <button type="button" className={`hover:bg-gray-100 rounded-md px-4 py-2 transition h-min`} onClick={() => supabase.auth.signOut()}>Log out</button>
+                )
+              }
+            </div>
+          </div>
+          <Outlet context={{ supabase, session }} />
         </div>
         <ScrollRestoration />
         <Scripts />

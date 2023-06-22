@@ -1,10 +1,10 @@
-import { ActionFunction, LoaderFunction, V2_MetaFunction, json, redirect } from "@remix-run/node";
+import { ActionFunction, LoaderArgs, LoaderFunction, V2_MetaFunction, json, redirect } from "@remix-run/node";
 import { Form, useActionData, useLoaderData } from '@remix-run/react'
 import { useEffect, useState } from 'react'
 import Note, { NewNote } from '~/components/Note'
 import type { NoteData } from '~/components/Note'
-import { supabase } from '~/server/supabase.server'
 import Section from '~/components/Section'
+import { createServerClient } from '@supabase/auth-helpers-remix'
 
 export const meta: V2_MetaFunction = () => {
   return [
@@ -21,43 +21,73 @@ const categoryTerms : object = {
   general: []
 }
 
-export const action: ActionFunction = async ({ request, params }) => {
-  const data = await request.formData()
+export const action: ActionFunction = async ({ request }) => {
+  const response = new Response()
 
-  const text = data.get('text')
+  const supabase = createServerClient(
+    process.env.SUPABASE_URL || '',
+    process.env.SUPABASE_KEY || '',
+    { request, response }
+  )
 
-  // TODO: Allow note to belong to multiple categories (e.g. currency + loot)
-  let inferredType = 'event'
-  const categories = Object.keys(categoryTerms)
-  for (const category of categories) {
-    for (const term of categoryTerms[category]) {
-      const words = text.toLowerCase().split(' ')
-      if (words.includes(term)) {
-        inferredType = category
-        break
+  const { data: { session }} = await supabase.auth.getSession()
+
+  if (session) {
+    const data = await request.formData()
+
+    const text = data.get('text')
+
+    // TODO: Allow note to belong to multiple categories (e.g. currency + loot)
+    let inferredType = 'event'
+    const categories = Object.keys(categoryTerms)
+    for (const category of categories) {
+      for (const term of categoryTerms[category]) {
+        const words = text.toLowerCase().split(' ')
+        if (words.includes(term)) {
+          inferredType = category
+          break
+        }
       }
     }
+
+    const note : NewNote = {
+      text: text?.toString() || '',
+      inferred_type: inferredType,
+      user_id: session.user.id
+    }
+    const noteResponse = await supabase.from('notes').insert(note)
+    if (!noteResponse.error) {
+      return redirect('/')
+    }
+
+    return noteResponse.error.message
   }
 
-  const note : NewNote = {
-    text: text?.toString() || '',
-    inferred_type: inferredType
-  }
-  const noteResponse = await supabase.from('notes').insert(note)
-  if (!noteResponse.error) {
-    return redirect('/')
-  }
-
-  return noteResponse.error.message
+  return redirect('/')
 }
 
-export const loader: LoaderFunction = async ({ request }) => {
+export const loader: LoaderFunction = async ({ request }: LoaderArgs) => {
+  const response = new Response()
+  // an empty response is required for the auth helpers
+  // to set cookies to manage auth
+
+  const supabase = createServerClient(
+    process.env.SUPABASE_URL || '',
+    process.env.SUPABASE_KEY || '',
+    { request, response }
+  )
+  const { data: { session }} = await supabase.auth.getSession()
+
+  if (!session) {
+    return redirect('/login')
+  }
+
   const url = new URL(request.url)
   const search = new URLSearchParams(url.search)
   const query = search.get('query') || ''
   const queryParsed = query.split('+').join(' ')
 
-  const notesResponse = await supabase.from('notes').select().order('id', { ascending: false })
+  const notesResponse = await supabase.from('notes').select().eq('user_id', session.user.id).order('id', { ascending: false })
 
   const categories = {}
   let notes = []
@@ -77,13 +107,13 @@ export const loader: LoaderFunction = async ({ request }) => {
   } else {
     return { error: notesResponse.error }
   }
-  return json({ notes, searchResults, query, queryParsed, categories }, {
+  return json({ notes, searchResults, query, queryParsed, categories, session }, {
     "Cache-Control": "public, s-maxage=60",
   })
 }
 
 export default function Index() {
-  const { notes, searchResults, query, queryParsed, categories } = useLoaderData()
+  const { notes, searchResults, query, queryParsed, categories, session } = useLoaderData()
   const error = useActionData()
   const [noteText, setNoteText] = useState('')
   const [searchQuery, setSearchQuery] = useState(queryParsed)
@@ -108,7 +138,7 @@ export default function Index() {
         <textarea name="text"
           value={noteText}
           onChange={(e) => setNoteText(e.target.value)}
-          className="rounded-md py-2 px-4 w-full max-w-full bg-transparent focus:outline-none resize-none text-lg h-20 whitespace-break-spaces"
+          className="rounded-md py-2 px-4 w-full max-w-full bg-transparent focus:outline-none resize-none text-lg h-20 whitespace-break-spaces no-scrollbar"
           placeholder="Write a note here."
           autoFocus
         />
@@ -116,7 +146,7 @@ export default function Index() {
       </Form>
       <div className="flex max-md:flex-col h-full my-2 gap-5 overflow-y-hidden">
         <div className="flex flex-col w-1/3 rounded-md max-md:w-full">
-          <div className={`bg-gray-100 ${searchQuery && !queryIsDirty ? 'h-[600px] max-md:h-[400px]' : 'h-[120px] max-md:h-[50px]'} transition-height rounded-md overflow-hidden`}>
+          <div className={`bg-gray-100 ${searchQuery && !queryIsDirty ? 'h-[600px] max-md:h-[400px]' : 'h-[44px]'} transition-height rounded-md overflow-hidden`}>
             <Form method="get" className="flex">
               <input
                 name="query" 

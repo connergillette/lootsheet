@@ -1,17 +1,25 @@
-import { LoaderArgs, LoaderFunction } from '@remix-run/node'
+import { LoaderArgs, LoaderFunction, Response } from '@remix-run/node'
 import { useLoaderData } from '@remix-run/react'
 import Note, { NoteData } from '~/components/Note'
-import { supabase } from '~/server/supabase.server'
 
-import { fetchTopicSummary } from '~/server/openai.server'
+// import { fetchTopicSummary } from '~/server/openai.server'
 import SectionHeader from '~/components/SectionHeader'
+import { createServerClient } from '@supabase/auth-helpers-remix'
 
 interface Props {
 
 }
 
-export const loader: LoaderFunction = async ({ params }: LoaderArgs) => {
+export const loader: LoaderFunction = async ({ request, params }: LoaderArgs) => {
   const { topic } = params
+
+  const response = new Response()
+
+  const supabase = createServerClient(
+    process.env.SUPABASE_URL || '',
+    process.env.SUPABASE_KEY || '',
+    { request, response }
+  )
 
   let notes : NoteData[] = []
   let summary : string = ''
