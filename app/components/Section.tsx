@@ -8,9 +8,9 @@ interface Props {
 
 export default function Section({name, items}: Props) {
   return (
-    <div className="w-1/2 max-md:w-full p-2 h-min">
+    <div className="w-1/2 max-md:w-full p-2 h-1/3 mb-5">
       <SectionHeader>{name}</SectionHeader>
-      <div className="flex flex-col overflow-y-scroll no-scrollbar pb-5 max-h-[300px]">
+      <div className="flex flex-col overflow-y-scroll no-scrollbar pb-5 h-full">
         {
           items.length > 0 && items.map((note: NoteData) => (
             <div className="flex" key={`${note.id}`}>

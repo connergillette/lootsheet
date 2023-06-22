@@ -206,7 +206,7 @@ export default function Index() {
             </div>
           </div>
         </div>
-        <div className="flex flex-wrap h-full w-2/3 max-md:w-full bg-gray-100 rounded-lg p-5">
+        <div className="flex flex-wrap w-2/3 max-md:w-full bg-gray-100 rounded-lg p-5 h-full">
           {
             Object.keys(categories).map((categoryName: string) => {
               const category = categories[categoryName]
