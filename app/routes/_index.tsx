@@ -146,7 +146,7 @@ export default function Index() {
       </Form>
       <div className="flex max-md:flex-col h-full my-2 gap-5 overflow-y-hidden">
         <div className="flex flex-col w-1/3 rounded-md max-md:w-full">
-          <div className={`bg-gray-100 ${searchQuery && !queryIsDirty ? 'h-[600px] max-md:h-[400px]' : 'h-[44px]'} transition-height rounded-md overflow-hidden`}>
+          <div className={`bg-gray-100 ${searchQuery && !queryIsDirty ? 'h-[600px] max-md:h-[400px]' : 'h-[44px] min-h-[44px]'} transition-height rounded-md overflow-hidden`}>
             <Form method="get" className="flex">
               <input
                 name="query" 
