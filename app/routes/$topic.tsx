@@ -29,39 +29,42 @@ export const loader: LoaderFunction = async ({ request, params }: LoaderArgs) =>
     let topicName = topicQuery?.split('+').join(' ')
     const userId = session.user.id
     
-    if (topicQuery) {    
+    if (topicQuery) {
       const notesResponse = await supabase.from('notes').select().textSearch('text', topicQuery).eq('user_id', userId).order('id', { ascending: false })
       if (!notesResponse.error) {
         notes = notesResponse.data
 
-        const topicRequest = await supabase.from('topics').select().eq('name', topicName).eq('user_id', userId)
+        if (notes.length > 0) {
+          const topicRequest = await supabase.from('topics').select().eq('name', topicName).eq('user_id', userId)
         
-        // TODO: Clean up this mess, add checks for empty notes list
-        let topicRecord = topicRequest.data[0]
-
-        if (!topicRecord) {
-          summary = await fetchTopicSummary(notes.map((note) => note.text))
-          topicRecord = (await supabase.from('topics').insert({
-            name: topicName,
-            current_summary: summary,
-            num_notes_summarized: notes.length,
-            user_id: userId
-          }).select()).data[0]
-        } else if (topicRecord.num_notes_summarized !== notes.length) {
-          summary = await fetchTopicSummary(notes.map((note) => note.text))
-          topicRecord = await supabase.from('topics').update({
-            current_summary: summary,
-            num_notes_summarized: notes.length,
-          }).eq('id', topicRecord.id)
+          // TODO: Clean up this mess, add checks for empty notes list
+          let topicRecord = topicRequest.data[0]
+  
+          if (!topicRecord) {
+            summary = await fetchTopicSummary(notes.map((note) => note.text))
+            topicRecord = (await supabase.from('topics').insert({
+              name: topicName,
+              current_summary: summary,
+              num_notes_summarized: notes.length,
+              user_id: userId
+            }).select()).data[0]
+          } else if (topicRecord.num_notes_summarized !== notes.length) {
+            summary = await fetchTopicSummary(notes.map((note) => note.text))
+            topicRecord = await supabase.from('topics').update({
+              current_summary: summary,
+              num_notes_summarized: notes.length,
+            }).eq('id', topicRecord.id)
+          }
+  
+          console.log(topicRecord)
+  
+          summary = topicRecord.current_summary
+        
+        // TODO: Implement error handling here
         }
-
-        console.log(topicRecord)
-
-        summary = topicRecord.current_summary
       } else {
         return { topicName, error: notesResponse.error }
       }
-      // TODO: Implement error handling here
     }
     
     return { topicName, notes, summary }
@@ -84,7 +87,7 @@ export default function Topic() {
             </span>
           </div>
         )}
-        {!error && 
+        {!error && notes.length > 0 &&
           <>
             <div className="w-2/3 max-md:w-full min-h-[200px]">
               <SectionHeader>Summary</SectionHeader>
@@ -95,6 +98,13 @@ export default function Topic() {
               {notes.map((note: NoteData) => <div className="flex" key={note.id}><Note data={note}/></div>)}
             </div>
           </>
+        }
+        {
+          !error && notes.length === 0 && (
+            <div className="w-full rounded-lg text-center p-20 text-xl opacity-60">
+              You have no notes about this topic.
+            </div>
+          )
         }
       </div>
     </div>
