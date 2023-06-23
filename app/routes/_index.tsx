@@ -192,8 +192,8 @@ export default function Index() {
             <div>
               {
                 notes && notes.map((note: NoteData) => (
-                  <div className="flex">
-                    <Note data={note} key={note.id} />
+                  <div className="flex" key={note.id}>
+                    <Note data={note}  />
                   </div>
                 ))
               }

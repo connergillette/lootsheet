@@ -2,6 +2,7 @@ import type { ActionArgs } from '@remix-run/node';
 import { Form, useActionData } from '@remix-run/react';
 import { createServerClient } from '@supabase/auth-helpers-remix'
 import { useEffect, useState } from 'react';
+import Button from '~/components/Button'
 
 export const action = async ({ request }: ActionArgs) => {
   const data = await request.formData()
@@ -33,17 +34,19 @@ export default function Register() {
   const data = useActionData()
   const [success, setSuccess] = useState('')
   const [error, setError] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {    
     if (data) {
       setSuccess(data.success || '')
       setError(data.error || '')
     }
+    setIsLoading(false)
   }, [data])
 
   return (
     <div className="flex flex-col mx-auto my-10 max-md:w-10/12 w-8/12">
-      <Form method="post">
+      <Form method="post" onSubmit={() => setIsLoading(true)}>
         <div className="mx-auto flex flex-col gap-10 max-w-[600px]">
           <div className={`text-green-400 text-center ${success ? 'opacity-100 h-full' : 'opacity-0 h-0 pointer-events-none'} transition`}>
             <h2 className="text-5xl my-10">Success!</h2>
@@ -67,7 +70,7 @@ export default function Register() {
                   <input name="confirmPassword" type="password" className="h-10 px-4 py-2 bg-gray-100 rounded-md text-black" required></input>
                 </div>
                 <div className="max-w-4xl">
-                <button type="submit" className="px-4 py-2 rounded-md bg-gray-600 text-white">Register</button>
+                  <Button type="submit" isLoading={isLoading} />
                 </div>
               </>
             )

@@ -12,6 +12,7 @@ export default function Login() {
   const data = useActionData()
   const { supabase } = useOutletContext()
   const [error, setError] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
     (async() => {
@@ -26,11 +27,12 @@ export default function Login() {
         window.location.href = '/'
       }
     })()
+    setIsLoading(false)
   }, [data, supabase])
 
   return (
     <div className="flex flex-col max-md:w-10/12 w-8/12 mx-auto my-10">
-      <Form method="post">
+      <Form method="post" onSubmit={() => setIsLoading(true)}>
         <div className="max-w-[600px] mx-auto flex flex-col gap-10">
           <span className={`text-red-400 text-center ${error ? 'opacity-100' : 'opacity-0'} transition`}>{error}</span>
           <h1 className="text-4xl">Log in</h1>
@@ -43,7 +45,7 @@ export default function Login() {
             <input name="password" type="password" className="h-10 px-4 py-2 bg-gray-100 rounded-md" required></input>
           </div>
           <div className="max-w-4xl">
-            <button type="submit" className="px-4 py-2 rounded-md bg-gray-600 text-white">Log in</button>
+            <button type="submit" className={`px-4 py-2 rounded-md bg-gray-600 text-white ${isLoading ? 'opacity-40' : ''}`} disabled={isLoading}>Log in</button>
           </div>
         </div>
       </Form>

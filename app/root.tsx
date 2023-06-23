@@ -46,19 +46,12 @@ export const loader = async ({ request }: LoaderArgs) => {
 }
 
 export default function App() {
-  const [hoverColor, setHoverColor] = useState('')
 
   const { env, session } = useLoaderData()
   const { revalidate } = useRevalidator()
   const [supabase] = useState(() => createBrowserClient(env.SUPABASE_URL, env.SUPABASE_KEY))
 
   const serverAccessToken = session?.access_token
-
-  const colors : string[] = ['text-yellow-400', 'text-orange-400', 'text-red-400', 'text-blue-400', 'text-gray-300']
-
-  const onHover = () => {
-    setHoverColor(colors[(Math.floor(Math.random() * 5))])
-  }
 
   useEffect(() => {
     const {
