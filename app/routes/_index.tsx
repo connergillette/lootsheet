@@ -117,6 +117,7 @@ export default function Index() {
   const [noteText, setNoteText] = useState('')
   const [searchQuery, setSearchQuery] = useState(queryParsed)
   const [queryIsDirty, setQueryIsDirty] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
   // const [view, setView] = useState('feed')
 
   useEffect(() => {
@@ -156,7 +157,7 @@ export default function Index() {
                 autoComplete='off'
                 autoFocus 
               />
-              <a href={`/${searchQuery.split(' ').join('+')}`} className={`bg-gray-600 text-white rounded-md px-4 max-md:px-2 py-2 max-md:py-1 m-1 whitespace-nowrap transition-opacity ${searchQuery ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+              <a href={`/${searchQuery.split(' ').join('+')}`} onClick={() => setIsLoading(true)} className={`bg-gray-600 text-white rounded-md px-4 max-md:px-2 py-2 max-md:py-1 m-1 whitespace-nowrap transition-opacity ${searchQuery ? 'opacity-100' : 'opacity-0 pointer-events-none'} ${isLoading ? 'animate-pulse' : ''}`}>
                 Go to page {'>'}
               </a>
             </Form>

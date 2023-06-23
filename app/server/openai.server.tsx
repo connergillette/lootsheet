@@ -21,7 +21,7 @@ export const fetchTopicSummary = async (topicNotes: string[]) => {
       }],
     })
   
-    return response.data.choices[0].content
+    return response.data.choices[0].message.content
   } catch (e) {
     console.log(e)
   }

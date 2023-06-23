@@ -78,7 +78,7 @@ export default function App() {
       </head>
       <body className="font-['Caladea'] overflow-hidden max-md:overflow-scroll">
         {/* TODO: Formalize single-page layout rules */}
-        <div className="w-8/12 max-md:w-11/12 mx-auto mt-4 max-md:mt-2 h-[calc(100dvh)] pb-[80px] max-md:pb-0 max-md:h-full overflow-hidden">
+        <div className="w-8/12 min-w-[900px] max-md:w-11/12 max-md:min-w-[300px] mx-auto mt-4 max-md:mt-2 h-[calc(100dvh)] pb-[80px] max-md:pb-0 max-md:h-full overflow-hidden">
           <Nav session={session} signOut={() => supabase.auth.signOut()} />
           <Outlet context={{ supabase, session }} />
         </div>
