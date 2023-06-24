@@ -17,7 +17,7 @@ export default function Nav({ signOut, session }: Props) {
   return (
     <div className="flex mx-auto align-middle">
       <a href="/" onMouseEnter={onHover} onMouseLeave={() => setHoverColor('')}>
-        <div className={`font-bold text-2xl align-middle py-2 ${hoverColor ? hoverColor : ''} transition`}>lootsheet</div>
+        <div className={`font-bold text-2xl align-middle py-2 ${hoverColor ? hoverColor : 'text-gray-300'} transition`}>lootsheet</div>
       </a>
       {/* TODO: Determine navbar buttons */}
       <div className="flex justify-end gap-2 grow">
@@ -31,7 +31,7 @@ export default function Nav({ signOut, session }: Props) {
         }
         {
           session && (
-            <button className={`hover:bg-gray-100 rounded-md px-4 py-2 transition h-min`} onClick={() => signOut()}>Log out</button>
+            <button className={`hover:bg-gray-100 hover:text-black rounded-md px-4 py-2 transition h-min text-gray-300`} onClick={() => signOut()}>Log out</button>
           )
         }
       </div>

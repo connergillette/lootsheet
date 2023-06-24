@@ -130,8 +130,11 @@ export default function Index() {
   // const [view, setView] = useState('feed')
 
   const noteTextWords = noteText.split(' ')
-  const currentFragment = noteTextWords[noteTextWords.length - 1]
-  const topicMatches = currentFragment ? topics.filter((topic: string) => topic.substring(0, currentFragment.length) === currentFragment) : []
+  const searchQueryWords = searchQuery.split(' ')
+  const currentNoteFragment = noteTextWords[noteTextWords.length - 1]
+  const currentSearchQueryFragment = searchQueryWords[searchQueryWords.length - 1]
+  const noteTopicMatches = currentNoteFragment ? topics.filter((topic: string) => topic.substring(0, currentNoteFragment.length) === currentNoteFragment) : []
+  const searchQueryTopicMatches = currentSearchQueryFragment ? topics.filter((topic: string) => topic.substring(0, currentSearchQueryFragment.length) === currentSearchQueryFragment) : []
 
   useEffect(() => {
     setNoteText('')
@@ -163,10 +166,10 @@ export default function Index() {
             ref={noteInputRef}
             autoFocus
           />
-          <div className={`flex gap-4 h-6 ${topicMatches.length > 0 ? 'opacity-100' : 'opacity-0'} transition`}>
+          <div className={`flex gap-2 h-6 ${noteTopicMatches.length > 0 ? 'opacity-100' : 'opacity-0'} transition`}>
             {
-              topicMatches && (
-                topicMatches.map((topicMatch: string) => <button key={topicMatch} type="button" className="bg-gray-200 rounded-lg px-2" onClick={() => autocomplete(topicMatch)}>{topicMatch}</button>)
+              noteTopicMatches && (
+                noteTopicMatches.map((topicMatch: string) => <button key={topicMatch} type="button" className="bg-gray-200 rounded-lg px-2" onClick={() => autocomplete(topicMatch)}>{topicMatch}</button>)
               )
             }
           </div>
@@ -175,19 +178,32 @@ export default function Index() {
       </Form>
       <div className="flex max-md:flex-col h-full my-2 gap-5 overflow-y-hidden">
         <div className="flex flex-col w-1/3 rounded-md max-md:w-full">
-          <div className={`bg-gray-100 ${searchQuery && !queryIsDirty ? 'h-[600px] max-md:h-[400px]' : 'h-[48px] min-h-[48px]'} transition-height rounded-md overflow-hidden`}>
-            <Form method="get" className="flex">
-              <input
-                name="query" 
-                value={searchQuery} 
-                onChange={(e) => updateQuery(e.target.value)} 
-                className={`rounded-md py-2 px-4 w-full bg-transparent focus:outline-none resize-none text-lg ${!queryIsDirty ? 'bg-gray-200' : ''} transition`} 
-                placeholder="Search"
-                autoComplete='off'
-              />
-              <a href={`/${searchQuery.split(' ').join('+')}`} onClick={() => setIsLoading(true)} className={`bg-gray-600 text-white rounded-md px-4 max-md:px-2 py-2 max-md:py-1 m-1 whitespace-nowrap transition-opacity ${searchQuery ? 'opacity-100' : 'opacity-0 pointer-events-none'} ${isLoading ? 'animate-pulse' : ''}`}>
-                Go to page {'>'}
-              </a>
+          <div className={`bg-gray-100 ${searchQuery && !queryIsDirty ? 'h-[900px] max-md:h-[400px]' : `${searchQueryTopicMatches.length > 0 ? 'h-[76px] min-h-[76px]' : 'h-[48px] min-h-[48px]'}`} transition-height rounded-md overflow-hidden`}>
+            <Form method="get" className="flex-col">
+              <div className="flex">
+                <input
+                  name="query" 
+                  value={searchQuery} 
+                  onChange={(e) => updateQuery(e.target.value)} 
+                  className={`rounded-md py-2 px-4 w-full bg-transparent focus:outline-none resize-none text-lg ${!queryIsDirty ? 'bg-gray-200' : ''} transition`} 
+                  placeholder="Search"
+                  autoComplete='off'
+                  />
+                <a href={`/${searchQuery.split(' ').join('+')}`} onClick={() => setIsLoading(true)} className={`bg-gray-600 text-white rounded-md px-4 max-md:px-2 py-2 max-md:py-1 m-1 whitespace-nowrap transition-opacity ${searchQuery ? 'opacity-100' : 'opacity-0 pointer-events-none'} ${isLoading ? 'animate-pulse' : ''}`}>
+                  Go to page {'>'}
+                </a>
+              </div>
+              <div className={`flex gap-2 h-6 ${searchQueryTopicMatches.length > 0 ? 'opacity-100' : 'opacity-0'} transition mb-2 mx-2`}>
+                {
+                  searchQueryTopicMatches && (
+                    searchQueryTopicMatches.map((topicMatch: string) => (
+                      <a href={`/${topicMatch}`} key={topicMatch}>
+                        <button key={topicMatch} type="button" className="bg-gray-200 rounded-lg px-2">{topicMatch}</button>
+                      </a> 
+                    ))
+                  )
+                }
+              </div>
             </Form>
             {
               searchQuery && !queryIsDirty && (

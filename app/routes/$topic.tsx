@@ -37,7 +37,7 @@ export const loader: LoaderFunction = async ({ request, params }: LoaderArgs) =>
         if (notes.length > 0) {
           const topicRequest = await supabase.from('topics').select().eq('name', topicName).eq('user_id', userId)
         
-          // TODO: Clean up this mess, add checks for empty notes list
+          // TODO: Clean up this mess
           let topicRecord = topicRequest.data[0]
   
           if (!topicRecord) {
@@ -50,13 +50,11 @@ export const loader: LoaderFunction = async ({ request, params }: LoaderArgs) =>
             }).select()).data[0]
           } else if (topicRecord.num_notes_summarized !== notes.length) {
             summary = await fetchTopicSummary(notes.map((note) => note.text))
-            topicRecord = await supabase.from('topics').update({
+            topicRecord = (await supabase.from('topics').update({
               current_summary: summary,
               num_notes_summarized: notes.length,
-            }).eq('id', topicRecord.id)
+            }).eq('id', topicRecord.id).select()).data[0]
           }
-  
-          console.log(topicRecord)
   
           summary = topicRecord.current_summary
         
@@ -77,7 +75,7 @@ export default function Topic() {
   const { topicName, notes, summary, error } = useLoaderData()
   return (
     <div className="flex flex-col gap-6 px-2 my-5">
-      <h1 className="text-2xl">{topicName}</h1>
+      <h1 className="text-4xl font-bold">{topicName}</h1>
       <div className="flex max-md:flex-col">
         {error && (
           <div className="text-red-400 text-lg h-full w-full text-center justify-center my-20">
@@ -91,7 +89,7 @@ export default function Topic() {
           <>
             <div className="w-2/3 max-md:w-full min-h-[200px]">
               <SectionHeader>Summary</SectionHeader>
-              <p className="text-lg w-3/4">{summary}</p>
+              <p className="text-lg w-3/4 py-2">{summary}</p>
             </div>
             <div className="flex flex-col w-1/3 max-md:w-full rounded-md">
               <SectionHeader>Notes</SectionHeader>
