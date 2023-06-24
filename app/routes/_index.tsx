@@ -1,6 +1,6 @@
 import { ActionFunction, LoaderArgs, LoaderFunction, V2_MetaFunction, json, redirect } from "@remix-run/node";
 import { Form, useActionData, useLoaderData } from '@remix-run/react'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Note, { NewNote } from '~/components/Note'
 import type { NoteData } from '~/components/Note'
 import Section from '~/components/Section'
@@ -88,9 +88,11 @@ export const loader: LoaderFunction = async ({ request }: LoaderArgs) => {
   const queryParsed = query.split('+').join(' ')
 
   const notesResponse = await supabase.from('notes').select().eq('user_id', session.user.id).order('id', { ascending: false })
-
+  const topicsResponse = await supabase.from('topics').select('name').eq('user_id', session.user.id).order('id', { ascending: false })
+  
   const categories = {}
   let notes = []
+  let topics = []
   let searchResults = []
   if (!notesResponse.error) {
     notes = notesResponse.data
@@ -106,19 +108,30 @@ export const loader: LoaderFunction = async ({ request }: LoaderArgs) => {
   } else {
     return { error: notesResponse.error }
   }
-  return json({ notes, searchResults, query, queryParsed, categories, session }, {
+
+  if (!topicsResponse.error) {
+    topics = topicsResponse.data.map((topic) => topic.name)
+  }
+
+
+  return json({ notes, topics, searchResults, query, queryParsed, categories, session }, {
     "Cache-Control": "public, s-maxage=60",
   })
 }
 
 export default function Index() {
-  const { notes, searchResults, query, queryParsed, categories, session } = useLoaderData()
+  const { notes, topics, searchResults, query, queryParsed, categories, session } = useLoaderData()
   const error = useActionData()
+  const noteInputRef = useRef()
   const [noteText, setNoteText] = useState('')
   const [searchQuery, setSearchQuery] = useState(queryParsed)
   const [queryIsDirty, setQueryIsDirty] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   // const [view, setView] = useState('feed')
+
+  const noteTextWords = noteText.split(' ')
+  const currentFragment = noteTextWords[noteTextWords.length - 1]
+  const topicMatches = currentFragment ? topics.filter((topic: string) => topic.includes(currentFragment)) : []
 
   useEffect(() => {
     setNoteText('')
@@ -131,17 +144,33 @@ export default function Index() {
     setQueryIsDirty(true)
   }
 
+  const autocomplete = (fragment: string) => {
+    noteTextWords[noteTextWords.length - 1] = fragment + ' '
+    setNoteText(noteTextWords.join(' '))
+    noteInputRef.current?.focus()
+  }
+
   return (
     <div className="w-full h-full max-md:h-full pb-24">
       {error && <pre className="text-red-500">{error.toString()}</pre>}
       <Form method="post" className="flex">
-        <textarea name="text"
-          value={noteText}
-          onChange={(e) => setNoteText(e.target.value)}
-          className="rounded-md py-2 px-4 w-full max-w-full bg-transparent focus:outline-none resize-none text-lg h-20 whitespace-break-spaces no-scrollbar"
-          placeholder="Write a note here."
-          autoFocus
-        />
+        <div className="flex flex-col grow px-4">
+          <textarea name="text"
+            value={noteText}
+            onChange={(e) => setNoteText(e.target.value)}
+            className="rounded-md py-2 w-full max-w-full bg-transparent focus:outline-none resize-none text-lg h-20 whitespace-break-spaces no-scrollbar"
+            placeholder="Write a note here."
+            ref={noteInputRef}
+            autoFocus
+          />
+          <div className={`flex gap-4 h-6 ${topicMatches.length > 0 ? 'opacity-100' : 'opacity-0'} transition`}>
+            {
+              topicMatches && (
+                topicMatches.map((topicMatch: string) => <button key={topicMatch} type="button" className="bg-gray-200 rounded-lg px-2" onClick={() => autocomplete(topicMatch)}>{topicMatch}</button>)
+              )
+            }
+          </div>
+        </div>
         <button type="submit" className={`bg-gray-600 text-white rounded-md px-4 max-md:px-2 py-2 max-md:py-1 m-1 h-min whitespace-nowrap transition-opacity ${noteText ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>Save Note</button>
       </Form>
       <div className="flex max-md:flex-col h-full my-2 gap-5 overflow-y-hidden">
@@ -155,7 +184,6 @@ export default function Index() {
                 className={`rounded-md py-2 px-4 w-full bg-transparent focus:outline-none resize-none text-lg ${!queryIsDirty ? 'bg-gray-200' : ''} transition`} 
                 placeholder="Search"
                 autoComplete='off'
-                autoFocus 
               />
               <a href={`/${searchQuery.split(' ').join('+')}`} onClick={() => setIsLoading(true)} className={`bg-gray-600 text-white rounded-md px-4 max-md:px-2 py-2 max-md:py-1 m-1 whitespace-nowrap transition-opacity ${searchQuery ? 'opacity-100' : 'opacity-0 pointer-events-none'} ${isLoading ? 'animate-pulse' : ''}`}>
                 Go to page {'>'}
