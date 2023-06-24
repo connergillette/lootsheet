@@ -38,7 +38,7 @@ export const action: ActionFunction = async ({ request }) => {
     const text = data.get('text')
 
     // TODO: Allow note to belong to multiple categories (e.g. currency + loot)
-    let inferredType = 'event'
+    let inferredType = 'general'
     const categories = Object.keys(categoryTerms)
     for (const category of categories) {
       for (const term of categoryTerms[category]) {
