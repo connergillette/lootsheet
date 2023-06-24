@@ -131,7 +131,7 @@ export default function Index() {
 
   const noteTextWords = noteText.split(' ')
   const currentFragment = noteTextWords[noteTextWords.length - 1]
-  const topicMatches = currentFragment ? topics.filter((topic: string) => topic.includes(currentFragment)) : []
+  const topicMatches = currentFragment ? topics.filter((topic: string) => topic.substring(0, currentFragment.length) === currentFragment) : []
 
   useEffect(() => {
     setNoteText('')
