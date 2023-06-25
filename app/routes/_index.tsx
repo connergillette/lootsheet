@@ -127,7 +127,7 @@ export default function Index() {
   const [searchQuery, setSearchQuery] = useState(queryParsed)
   const [queryIsDirty, setQueryIsDirty] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-  // const [view, setView] = useState('feed')
+  const [showCategoryView, setShowCategoryView] = useState(true)
 
   const noteTextWords = noteText.split(' ')
   const searchQueryWords = searchQuery.split(' ')
@@ -176,9 +176,14 @@ export default function Index() {
         </div>
         <button type="submit" className={`bg-gray-600 text-white rounded-md px-4 max-md:px-2 py-2 max-md:py-1 m-1 h-min whitespace-nowrap transition-opacity ${noteText ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>Save Note</button>
       </Form>
-      <div className="flex max-md:flex-col h-full my-2 gap-5 overflow-y-hidden">
-        <div className="flex flex-col w-1/3 rounded-md max-md:w-full">
-          <div className={`bg-gray-100 ${searchQuery && !queryIsDirty ? 'h-[900px] max-md:h-[400px]' : `${searchQueryTopicMatches.length > 0 ? 'h-[76px] min-h-[76px]' : 'h-[48px] min-h-[48px]'}`} transition-height rounded-md overflow-hidden`}>
+      <div className="flex justify-end gap-2">
+        <button type="button" onClick={() => setShowCategoryView(!showCategoryView)} className={`opacity-100 hover:opacity-90 rounded-md px-4 py-2 transition h-min ${showCategoryView ? 'bg-gray-600 text-white': 'bg-gray-100 text-gray-600'}`}>
+          {showCategoryView ? 'Hide Categories' : 'Show Categories'}
+        </button>
+      </div>
+      <div className="flex max-md:flex-col h-full my-2 overflow-y-hidden">
+        <div className={`flex flex-col ${showCategoryView ? 'w-1/3 px-4' : 'w-full p-0'} transition-width rounded-md max-md:w-full`}>
+          <div className={`bg-gray-100 ${searchQuery && !queryIsDirty ? `h-[900px] max-md:h-[400px]` : `${searchQueryTopicMatches.length > 0 ? 'h-[76px] min-h-[76px]' : 'h-[48px] min-h-[48px]'}`} transition-height rounded-md overflow-hidden`}>
             <Form method="get" className="flex-col">
               <div className="flex">
                 <input
@@ -233,7 +238,7 @@ export default function Index() {
               )
             }
           </div>
-          <div className="flex flex-col overflow-y-scroll no-scrollbar px-2 max-md:max-h-[300px] mt-2">
+          <div className={`flex flex-col overflow-y-scroll no-scrollbar px-2 ${showCategoryView ? 'max-md:max-h-[300px]' : 'max-md:h-[900px]'} mt-2`}>
             <div>
               {
                 notes && notes.map((note: NoteData) => (
@@ -250,7 +255,7 @@ export default function Index() {
             </div>
           </div>
         </div>
-        <div className="flex flex-wrap w-2/3 max-md:w-full bg-gray-100 rounded-lg p-5 h-full">
+        <div className={`flex flex-wrap bg-gray-100 rounded-lg ${showCategoryView ? 'h-full w-2/3 max-md:w-full p-5' : 'w-0 h-0'} transition-height transition-width overflow-hidden`}>
           {
             Object.keys(categories).map((categoryName: string) => {
               const category = categories[categoryName]
