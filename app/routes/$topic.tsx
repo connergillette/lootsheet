@@ -21,10 +21,12 @@ export const loader: LoaderFunction = async ({ request, params }: LoaderArgs) =>
     { request, response }
   )
 
-  const {data: { session }} = await supabase.auth.getSession()
+  const { data: { session } } = await supabase.auth.getSession()
 
   if (session) {
     let notes : NoteData[] = []
+    let notesText : string[] = []
+    let relatedTopics : string[] = []
     let summary : string = ''
     let topicName = topicQuery?.split('+').join(' ')
     const userId = session.user.id
@@ -33,15 +35,27 @@ export const loader: LoaderFunction = async ({ request, params }: LoaderArgs) =>
       const notesResponse = await supabase.from('notes').select().textSearch('text', topicQuery).eq('user_id', userId).order('id', { ascending: false })
       if (!notesResponse.error) {
         notes = notesResponse.data
+        notesText = notesResponse.data.map((note) => note.text)
 
         if (notes.length > 0) {
-          const topicRequest = await supabase.from('topics').select().eq('name', topicName).eq('user_id', userId)
+          const topicRequest = await supabase.from('topics').select().eq('name', 'Aenn\'tol Lor').eq('user_id', userId)
+          const allTopicsRequest = await supabase.from('topics').select('name').eq('user_id', userId)
         
           // TODO: Clean up this mess
-          let topicRecord = topicRequest.data[0]
+          let topicRecord = topicRequest?.data[0]
+          let allTopics = allTopicsRequest?.data.map((topic) => topic.name)
+          
+          for (const note of notesText) {
+            for (const topic of allTopics) {
+              if (topic === topicRecord.name) break
+              if (note.includes(topic) && !relatedTopics.includes(topic)) {
+                relatedTopics.push(topic)
+              }
+            }
+          }
   
           if (!topicRecord) {
-            summary = await fetchTopicSummary(notes.map((note) => note.text))
+            summary = await fetchTopicSummary(notesText)
             topicRecord = (await supabase.from('topics').insert({
               name: topicName,
               current_summary: summary,
@@ -49,7 +63,7 @@ export const loader: LoaderFunction = async ({ request, params }: LoaderArgs) =>
               user_id: userId
             }).select()).data[0]
           } else if (topicRecord.num_notes_summarized !== notes.length) {
-            summary = await fetchTopicSummary(notes.map((note) => note.text))
+            summary = await fetchTopicSummary(notesText)
             topicRecord = (await supabase.from('topics').update({
               current_summary: summary,
               num_notes_summarized: notes.length,
@@ -65,14 +79,14 @@ export const loader: LoaderFunction = async ({ request, params }: LoaderArgs) =>
       }
     }
     
-    return { topicName, notes, summary }
+    return { topicName, notes, summary, relatedTopics }
   }
 
   return redirect('/login')
 }
 
 export default function Topic() {
-  const { topicName, notes, summary, error } = useLoaderData()
+  const { topicName, notes, summary, relatedTopics, error } = useLoaderData()
   return (
     <div className="flex flex-col gap-6 px-2 my-5">
       <h1 className="text-4xl font-bold">{topicName}</h1>
@@ -89,7 +103,17 @@ export default function Topic() {
           <>
             <div className="w-2/3 max-md:w-full min-h-[200px]">
               <SectionHeader>Summary</SectionHeader>
-              <p className="text-lg w-3/4 py-2">{summary}</p>
+              <p className="text-lg w-3/4 pt-2 pb-10">{summary}</p>
+              <SectionHeader>Related Topics</SectionHeader>
+              <div className="flex gap-2 pt-2 flex-wrap">
+                {
+                  relatedTopics.map((topic) => (
+                    <a href={`/${encodeURIComponent(topic)}`} key={topic}>
+                      <button key={topic} type="button" className="bg-gray-200 rounded-lg px-2">{topic}</button>
+                    </a> 
+                  ))
+                }
+              </div>
             </div>
             <div className="flex flex-col w-1/3 max-md:w-full rounded-md">
               <SectionHeader>Notes</SectionHeader>

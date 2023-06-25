@@ -202,7 +202,7 @@ export default function Index() {
                 {
                   searchQueryTopicMatches && (
                     searchQueryTopicMatches.map((topicMatch: string) => (
-                      <a href={`/${topicMatch}`} key={topicMatch}>
+                      <a href={`/${encodeURIComponent(topicMatch)}`} key={topicMatch}>
                         <button key={topicMatch} type="button" className="bg-gray-200 rounded-lg px-2">{topicMatch}</button>
                       </a> 
                     ))
