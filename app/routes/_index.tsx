@@ -157,29 +157,33 @@ export default function Index() {
     <div className="w-full h-full max-md:h-full pb-24">
       {error && <pre className="text-red-500">{error.toString()}</pre>}
       <Form method="post" className="flex">
-        <div className="flex flex-col grow px-4">
-          <textarea name="text"
-            value={noteText}
-            onChange={(e) => setNoteText(e.target.value)}
-            className="rounded-md py-2 w-full max-w-full bg-transparent focus:outline-none resize-none text-lg h-20 whitespace-break-spaces no-scrollbar"
-            placeholder="Write a note here."
-            ref={noteInputRef}
-            autoFocus
-          />
-          <div className={`flex gap-2 h-6 ${noteTopicMatches.length > 0 ? 'opacity-100' : 'opacity-0'} transition`}>
-            {
-              noteTopicMatches && (
-                noteTopicMatches.map((topicMatch: string) => <button key={topicMatch} type="button" className="bg-gray-200 rounded-lg px-2" onClick={() => autocomplete(topicMatch)}>{topicMatch}</button>)
-              )
-            }
+        <div className="flex px-4 w-full">
+          <div className="grow w-full">
+            <textarea name="text"
+              value={noteText}
+              onChange={(e) => setNoteText(e.target.value)}
+              className="rounded-md py-2 w-full max-w-full bg-transparent focus:outline-none resize-none text-lg h-20 whitespace-break-spaces no-scrollbar"
+              placeholder="Write a note here."
+              ref={noteInputRef}
+              autoFocus
+              />
           </div>
+          <button type="submit" className={`bg-gray-600 text-white rounded-md px-4 max-md:px-2 py-2 max-md:py-1 m-1 h-min whitespace-nowrap transition-opacity ${noteText ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>Save Note</button>
         </div>
-        <button type="submit" className={`bg-gray-600 text-white rounded-md px-4 max-md:px-2 py-2 max-md:py-1 m-1 h-min whitespace-nowrap transition-opacity ${noteText ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>Save Note</button>
       </Form>
-      <div className="flex justify-end gap-2">
-        <button type="button" onClick={() => setShowCategoryView(!showCategoryView)} className={`opacity-100 hover:opacity-90 rounded-md px-4 py-2 transition h-min ${showCategoryView ? 'bg-gray-600 text-white': 'bg-gray-100 text-gray-600'}`}>
-          {showCategoryView ? 'Hide Categories' : 'Show Categories'}
-        </button>
+      <div className="flex px-4">
+        <div className={`flex grow gap-2 h-6 ${noteTopicMatches.length > 0 ? 'opacity-100' : 'opacity-0'} transition`}>
+          {
+            noteTopicMatches && (
+              noteTopicMatches.map((topicMatch: string) => <button key={topicMatch} type="button" className="bg-gray-200 rounded-lg px-2" onClick={() => autocomplete(topicMatch)}>{topicMatch}</button>)
+            )
+          }
+        </div>
+        <div className="flex justify-end gap-2">
+          <button type="button" onClick={() => setShowCategoryView(!showCategoryView)} className={`opacity-100 hover:opacity-90 rounded-md px-4 py-2 transition h-min ${showCategoryView ? 'bg-gray-600 text-white': 'bg-gray-100 text-gray-600'}`}>
+            {showCategoryView ? 'Hide Categories' : 'Show Categories'}
+          </button>
+        </div>
       </div>
       <div className="flex max-md:flex-col h-full my-2 overflow-y-hidden">
         <div className={`flex flex-col ${showCategoryView ? 'w-1/3 px-4' : 'w-full p-0'} transition-width rounded-md max-md:w-full`}>
