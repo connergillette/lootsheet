@@ -5,6 +5,10 @@ import Note, { NewNote } from '~/components/Note'
 import type { NoteData } from '~/components/Note'
 import Section from '~/components/Section'
 import { createServerClient } from '@supabase/auth-helpers-remix'
+import CategoryGrid from '~/components/CategoryGrid'
+import NoteEntryForm from '~/components/NoteEntryForm'
+import NotesFeed from '~/components/NotesFeed'
+import NotesSearch from '~/components/NotesSearch'
 
 export const meta: V2_MetaFunction = () => {
   return [
@@ -120,21 +124,13 @@ export const loader: LoaderFunction = async ({ request }: LoaderArgs) => {
 }
 
 export default function Index() {
-  const { notes, topics, searchResults, query, queryParsed, categories, session } = useLoaderData()
+  const { notes, topics, searchResults, queryParsed, categories } = useLoaderData()
   const error = useActionData()
   const noteInputRef = useRef()
   const [noteText, setNoteText] = useState('')
-  const [searchQuery, setSearchQuery] = useState(queryParsed)
   const [queryIsDirty, setQueryIsDirty] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
+  const [searchQuery, setSearchQuery] = useState(queryParsed)
   const [showCategoryView, setShowCategoryView] = useState(true)
-
-  const noteTextWords = noteText.split(' ')
-  const searchQueryWords = searchQuery.split(' ')
-  const currentNoteFragment = noteTextWords[noteTextWords.length - 1]
-  const currentSearchQueryFragment = searchQueryWords[searchQueryWords.length - 1]
-  const noteTopicMatches = currentNoteFragment ? topics.filter((topic: string) => topic.substring(0, currentNoteFragment.length) === currentNoteFragment) : []
-  const searchQueryTopicMatches = currentSearchQueryFragment ? topics.filter((topic: string) => topic.substring(0, currentSearchQueryFragment.length) === currentSearchQueryFragment) : []
 
   useEffect(() => {
     setNoteText('')
@@ -142,133 +138,30 @@ export default function Index() {
     setQueryIsDirty(false)
   }, [notes, queryParsed])
 
-  const updateQuery = (newQuery: string) => {
-    setSearchQuery(newQuery)
-    setQueryIsDirty(true)
-  }
-
-  const autocomplete = (fragment: string) => {
-    noteTextWords[noteTextWords.length - 1] = fragment + ' '
-    setNoteText(noteTextWords.join(' '))
-    noteInputRef.current?.focus()
-  }
-
   return (
     <div className="w-full h-full max-md:h-full pb-24">
-      {error && <pre className="text-red-500">{error.toString()}</pre>}
-      <Form method="post" className="flex">
-        <div className="flex px-4 w-full">
-          <div className="grow w-full">
-            <textarea name="text"
-              value={noteText}
-              onChange={(e) => setNoteText(e.target.value)}
-              className="rounded-md py-2 w-full max-w-full bg-transparent focus:outline-none resize-none text-lg h-20 whitespace-break-spaces no-scrollbar"
-              placeholder="Write a note here."
-              ref={noteInputRef}
-              autoFocus
-              />
-          </div>
-          <button type="submit" className={`bg-gray-600 text-white rounded-md px-4 max-md:px-2 py-2 max-md:py-1 m-1 h-min whitespace-nowrap transition-opacity ${noteText ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>Save Note</button>
-        </div>
-      </Form>
-      <div className="flex px-4">
-        <div className={`flex grow gap-2 h-6 ${noteTopicMatches.length > 0 ? 'opacity-100' : 'opacity-0'} transition`}>
-          {
-            noteTopicMatches && (
-              noteTopicMatches.map((topicMatch: string) => <button key={topicMatch} type="button" className="bg-gray-200 rounded-lg px-2" onClick={() => autocomplete(topicMatch)}>{topicMatch}</button>)
-            )
-          }
-        </div>
-        <div className="flex justify-end gap-2">
-          <button type="button" onClick={() => setShowCategoryView(!showCategoryView)} className={`opacity-100 hover:opacity-90 rounded-md px-4 py-2 transition h-min ${showCategoryView ? 'bg-gray-600 text-white': 'bg-gray-100 text-gray-600'}`}>
-            {showCategoryView ? 'Hide Categories' : 'Show Categories'}
-          </button>
-        </div>
-      </div>
+      <NoteEntryForm 
+        error={error}
+        noteText={noteText}
+        setNoteText={setNoteText}
+        noteInputRef={noteInputRef}
+        topics={topics}
+        showCategoryView={showCategoryView}
+        setShowCategoryView={setShowCategoryView} 
+      />
       <div className="flex max-md:flex-col h-full my-2 overflow-y-hidden">
         <div className={`flex flex-col ${showCategoryView ? 'w-1/3 px-4' : 'w-full p-0'} transition-width rounded-md max-md:w-full`}>
-          <div className={`bg-gray-100 ${searchQuery && !queryIsDirty ? `h-[900px] max-md:h-[400px]` : `${searchQueryTopicMatches.length > 0 ? 'h-[76px] min-h-[76px]' : 'h-[48px] min-h-[48px]'}`} transition-height rounded-md overflow-hidden`}>
-            <Form method="get" className="flex-col">
-              <div className="flex">
-                <input
-                  name="query" 
-                  value={searchQuery} 
-                  onChange={(e) => updateQuery(e.target.value)} 
-                  className={`rounded-md py-2 px-4 w-full bg-transparent focus:outline-none resize-none text-lg ${!queryIsDirty ? 'bg-gray-200' : ''} transition`} 
-                  placeholder="Search"
-                  autoComplete='off'
-                  />
-                <a href={`/${searchQuery.split(' ').join('+')}`} onClick={() => setIsLoading(true)} className={`bg-gray-600 text-white rounded-md px-4 max-md:px-2 py-2 max-md:py-1 m-1 whitespace-nowrap transition-opacity ${searchQuery ? 'opacity-100' : 'opacity-0 pointer-events-none'} ${isLoading ? 'animate-pulse' : ''}`}>
-                  Go to page {'>'}
-                </a>
-              </div>
-              <div className={`flex gap-2 h-6 ${searchQueryTopicMatches.length > 0 ? 'opacity-100' : 'opacity-0'} transition mb-2 mx-2`}>
-                {
-                  searchQueryTopicMatches && (
-                    searchQueryTopicMatches.map((topicMatch: string) => (
-                      <a href={`/${encodeURIComponent(topicMatch)}`} key={topicMatch}>
-                        <button key={topicMatch} type="button" className="bg-gray-200 rounded-lg px-2">{topicMatch}</button>
-                      </a> 
-                    ))
-                  )
-                }
-              </div>
-            </Form>
-            {
-              searchQuery && !queryIsDirty && (
-                <>
-                  <div className="border-solid border-t-2 border-gray-200 mx-2"></div>
-                  <div className="p-6 pt-2 flex flex-col align-center h-full pb-20 overflow-y-scroll no-scrollbar">
-                    { searchResults.length > 0 && (
-                        searchResults.map((note: NoteData) => (
-                          <div className="flex" key={`searchResult-${note.id}`}>
-                            <Note data={note} query={searchQuery} />
-                          </div>
-                        ))
-                      )
-                    }
-                    {
-                      (searchResults && searchResults.length > 5) && (
-                        <div className="text-gray-300 text-center w-full">(End of results)</div>
-                      )
-                    }
-                    {
-                      searchResults.length == 0 && (
-                        <span className="text-gray-400 text-center w-full mt-3">No results found.</span>
-                      )
-                    }
-                  </div>
-                </>
-              )
-            }
-          </div>
-          <div className={`flex flex-col overflow-y-scroll no-scrollbar px-2 ${showCategoryView ? 'max-md:max-h-[300px]' : 'max-md:h-[900px]'} mt-2`}>
-            <div>
-              {
-                notes && notes.map((note: NoteData) => (
-                  <div className="flex" key={note.id}>
-                    <Note data={note}  />
-                  </div>
-                ))
-              }
-              {
-                (notes && notes.length > 10) && (
-                  <div className="text-gray-300 text-center w-full">(End of notes)</div>
-                )
-              }
-            </div>
-          </div>
+          <NotesSearch
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery} 
+            topics={topics} 
+            queryIsDirty={queryIsDirty}
+            setQueryIsDirty={setQueryIsDirty}
+            searchResults={searchResults}
+          />
+          <NotesFeed notes={notes} showCategoryView={showCategoryView} />
         </div>
-        <div className={`flex flex-wrap bg-gray-100 rounded-lg ${showCategoryView ? 'h-full w-2/3 max-md:w-full p-5' : 'w-0 h-0'} transition-height transition-width overflow-hidden`}>
-          {
-            Object.keys(categories).map((categoryName: string) => {
-              const category = categories[categoryName]
-              return (
-                <Section name={categoryName.toLocaleUpperCase()} items={category} key={categoryName} />
-              )
-            })
-          }
-        </div>
+        <CategoryGrid categories={categories} showCategoryView={showCategoryView} />
       </div>
     </div>
   );
