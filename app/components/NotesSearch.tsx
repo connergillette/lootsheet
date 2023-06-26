@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import SearchForm from './SearchForm'
-import Note, { NoteData } from './Note'
+import type { NoteData } from './Note'
+import Note from './Note'
 
 interface Props {
   searchQuery: string,

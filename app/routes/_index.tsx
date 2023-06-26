@@ -17,7 +17,7 @@ export const meta: V2_MetaFunction = () => {
   ];
 }
 
-interface CategoryMap {
+export interface CategoryMap {
   [key: string]: string[]
 }
 

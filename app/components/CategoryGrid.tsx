@@ -1,9 +1,8 @@
 import Section from '~/components/Section'
-import { NoteData } from './Note'
-import Button from './Button'
+import type { CategoryMap } from '~/routes/_index'
 
 interface Props {
-  categories: object,
+  categories: CategoryMap,
   showCategoryView: boolean
 }
 

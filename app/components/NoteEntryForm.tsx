@@ -1,5 +1,5 @@
 import { Form } from '@remix-run/react'
-import { MutableRefObject, useEffect, useState } from 'react'
+import { MutableRefObject } from 'react'
 
 interface Props {
   error?: string,
