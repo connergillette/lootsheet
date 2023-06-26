@@ -31,7 +31,7 @@ export default function NoteEntryForm({ noteText, setNoteText, noteInputRef, top
             <textarea name="text"
               value={noteText}
               onChange={(e) => setNoteText(e.target.value)}
-              className="rounded-md py-2 w-full max-w-full bg-transparent focus:outline-none resize-none text-lg h-20 whitespace-break-spaces no-scrollbar"
+              className="rounded-md py-2 px-4 w-full max-w-full bg-transparent focus:outline-none resize-none text-lg h-20 whitespace-break-spaces no-scrollbar"
               placeholder="Write a note here."
               ref={noteInputRef}
               autoFocus

@@ -17,7 +17,11 @@ export const meta: V2_MetaFunction = () => {
   ];
 }
 
-const categoryTerms : object = {
+interface CategoryMap {
+  [key: string]: string[]
+}
+
+const categoryTerms : CategoryMap = {
   currency: ['pp', 'gp', 'sp', 'ep', 'cp', 'platinum', 'gold', 'silver', 'electrum', 'copper'],
   loot: ['gained', 'found', 'chest', 'loot'],
   encounter: ['fought', 'encountered', 'attacked', 'met with', 'talked with'],
@@ -39,7 +43,7 @@ export const action: ActionFunction = async ({ request }) => {
   if (session) {
     const data = await request.formData()
 
-    const text = data.get('text')
+    const text = data.get('text')?.toString() || ''
 
     // TODO: Allow note to belong to multiple categories (e.g. currency + loot)
     let inferredType = 'general'
@@ -94,7 +98,7 @@ export const loader: LoaderFunction = async ({ request }: LoaderArgs) => {
   const notesResponse = await supabase.from('notes').select().eq('user_id', session.user.id).order('id', { ascending: false })
   const topicsResponse = await supabase.from('topics').select('name').eq('user_id', session.user.id).order('id', { ascending: false })
   
-  const categories = {}
+  const categories: CategoryMap = {}
   let notes = []
   let topics = []
   let searchResults = []
