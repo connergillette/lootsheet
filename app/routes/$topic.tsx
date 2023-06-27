@@ -38,22 +38,22 @@ export const loader: LoaderFunction = async ({ request, params }: LoaderArgs) =>
         notesText = notesResponse.data.map((note) => note.text)
 
         if (notes.length > 0) {
-          const topicRequest = await supabase.from('topics').select().eq('name', 'Aenn\'tol Lor').eq('user_id', userId)
+          const topicRequest = await supabase.from('topics').select().eq('name', topicName).eq('user_id', userId)
           const allTopicsRequest = await supabase.from('topics').select('name').eq('user_id', userId)
         
           // TODO: Clean up this mess
-          let topicRecord = topicRequest?.data[0]
+          let topicRecord = topicRequest?.data[0] || null
           let allTopics = allTopicsRequest?.data.map((topic) => topic.name)
-          
-          for (const note of notesText) {
-            for (const topic of allTopics) {
-              if (topic === topicRecord.name) break
-              if (note.includes(topic) && !relatedTopics.includes(topic)) {
-                relatedTopics.push(topic)
-              }
+
+          const notesWithAttachments = notes.filter((note: NoteData) => note.has_attachment)
+          for (const note of notesWithAttachments) {
+            const file = await supabase.storage.from('note_attachments').createSignedUrl(`${session.user.id}/${note.id}`, 60)
+            if (file && file.data) {
+              note.attachment = file.data.signedUrl
             }
           }
-  
+          
+          console.log(topicRecord)
           if (!topicRecord) {
             summary = await fetchTopicSummary(notesText)
             topicRecord = (await supabase.from('topics').insert({
@@ -68,6 +68,15 @@ export const loader: LoaderFunction = async ({ request, params }: LoaderArgs) =>
               current_summary: summary,
               num_notes_summarized: notes.length,
             }).eq('id', topicRecord.id).select()).data[0]
+          }
+
+          for (const note of notesText) {
+            for (const topic of allTopics) {
+              if (topic === topicRecord.name) break
+              if (note.includes(topic) && !relatedTopics.includes(topic)) {
+                relatedTopics.push(topic)
+              }
+            }
           }
   
           summary = topicRecord.current_summary
@@ -87,10 +96,12 @@ export const loader: LoaderFunction = async ({ request, params }: LoaderArgs) =>
 
 export default function Topic() {
   const { topicName, notes, summary, relatedTopics, error } = useLoaderData()
+  const notesWithAttachments = notes.filter((note: NoteData) => note.has_attachment)
+
   return (
     <div className="flex flex-col gap-6 px-2 my-5">
       <h1 className="text-4xl font-bold">{topicName}</h1>
-      <div className="flex max-md:flex-col">
+      <div className="flex max-md:flex-col gap-10">
         {error && (
           <div className="text-red-400 text-lg h-full w-full text-center justify-center my-20">
             <span>There was a problem fetching notes for this topic.</span>
@@ -102,18 +113,33 @@ export default function Topic() {
         {!error && notes.length > 0 &&
           <>
             <div className="w-2/3 max-md:w-full min-h-[200px]">
+              { notesWithAttachments.length > 0 && (
+                <div className="grid grid-flow-row grid-cols-2 gap-4 pb-10">
+                  {
+                    notesWithAttachments.map((note) => (
+                      <img src={note.attachment} alt={`Note ${note.id}`} key={`image-${note.id}`} className="w-min rounded-lg" />
+                    ))
+                  }
+                </div>
+              )}
               <SectionHeader>Summary</SectionHeader>
               <p className="text-lg w-3/4 pt-2 pb-10">{summary}</p>
-              <SectionHeader>Related Topics</SectionHeader>
-              <div className="flex gap-2 pt-2 flex-wrap">
-                {
-                  relatedTopics.map((topic) => (
-                    <a href={`/${encodeURIComponent(topic)}`} key={topic}>
-                      <button key={topic} type="button" className="bg-gray-200 rounded-lg px-2">{topic}</button>
-                    </a> 
-                  ))
-                }
-              </div>
+              {
+                relatedTopics.length > 0 && (
+                  <>
+                    <SectionHeader>Related Topics</SectionHeader>
+                    <div className="flex gap-2 pt-2 flex-wrap">
+                      {
+                        relatedTopics.map((topic) => (
+                          <a href={`/${encodeURIComponent(topic)}`} key={topic}>
+                            <button key={topic} type="button" className="bg-gray-200 rounded-lg px-2">{topic}</button>
+                          </a> 
+                        ))
+                      }
+                    </div>
+                  </>
+                )
+              }
             </div>
             <div className="flex flex-col w-1/3 max-md:w-full rounded-md">
               <SectionHeader>Notes</SectionHeader>
