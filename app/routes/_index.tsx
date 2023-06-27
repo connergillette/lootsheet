@@ -48,6 +48,7 @@ export const action: ActionFunction = async ({ request }) => {
     const data = await request.formData()
 
     const text = data.get('text')?.toString() || ''
+    const attachments : FormDataEntryValue | null = data.get('attachments') || null
 
     // TODO: Allow note to belong to multiple categories (e.g. currency + loot)
     let inferredType = 'general'
@@ -65,10 +66,17 @@ export const action: ActionFunction = async ({ request }) => {
     const note : NewNote = {
       text: text?.toString() || '',
       inferred_type: inferredType,
-      user_id: session.user.id
+      user_id: session.user.id,
+      has_attachment: !!attachments
     }
-    const noteResponse = await supabase.from('notes').insert(note)
+    const noteResponse = await supabase.from('notes').insert(note).select()
     if (!noteResponse.error) {
+      if (attachments) {
+        await supabase.storage.from('note_attachments').upload(`${session.user.id}/${noteResponse.data[0].id}`, attachments)
+        // const bucketObject = await supabase.storage.from('note_attachments').list()
+        // const noteUpdateResponse = await supabase.from('notes').update({ attachment: bucketResponse.data?.path })
+        // console.log(bucketResponse)
+      }
       return redirect('/')
     }
 
@@ -117,6 +125,15 @@ export const loader: LoaderFunction = async ({ request }: LoaderArgs) => {
     if (queryParsed) {
       searchResults = notes.filter((note: NoteData) => note.text.includes(queryParsed))
     }
+    const notesWithAttachments = notes.filter((note: NoteData) => note.has_attachment)
+    for (const note of notesWithAttachments) {
+      const file = await supabase.storage.from('note_attachments').createSignedUrl(`${session.user.id}/${note.id}`, 60)
+      if (file && file.data) {
+        console.log(file.data.signedUrl)
+        note.attachment = file.data.signedUrl
+      }
+    }
+
   } else {
     return { error: notesResponse.error }
   }

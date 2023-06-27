@@ -1,3 +1,5 @@
+import { Suspense } from 'react'
+
 export const categoryColors : object = {
   currency: 'bg-yellow-400',
   loot: 'bg-orange-400',
@@ -10,13 +12,16 @@ export interface NoteData {
   id: number,
   created_at: Date,
   text: string,
-  inferred_type: string
+  inferred_type: string,
+  attachment?: string,
+  has_attachment?: boolean
 }
 
 export interface NewNote {
   text: string,
   user_id: string,
   inferred_type?: string,
+  has_attachment: boolean
 }
 
 interface Props {
@@ -42,7 +47,7 @@ export default function Note({ data, query }: Props) {
   }
 
   return (
-    <div className="flex">
+    <div className="flex w-full">
       <div className={`
           flex w-2 rounded-md h-3/4 my-auto \
           ${categoryColors[data.inferred_type]} \
@@ -54,8 +59,23 @@ export default function Note({ data, query }: Props) {
           my-2 rounded-md h-full \
         `}
       >
-        <span className="text-xs opacity-50">{new Date(data.created_at).toDateString()}</span>
-        <span>{highlightedText}</span>
+        <div className="flex w-full gap-2">
+          <div className="flex flex-col grow w-full">
+            <div className="text-xs opacity-50 w-full">{new Date(data.created_at).toDateString()}</div>
+            <div className="w-full">{highlightedText}</div>
+          </div>
+          {
+            data.has_attachment && (
+              <div className="aspect-square h-min w-24 overflow-hidden rounded-lg place-self-end">
+                <a href={data.attachment} target="_blank" rel="noreferrer" className="h-24 w-24 justify-end" >
+                  <Suspense>
+                    <img src={data.attachment} alt="Note attachment" className="aspect-square object-cover hover:scale-105 transition rounded-lg" />
+                  </Suspense>
+                </a>
+              </div>
+            )
+          }
+        </div>
       </div>
     </div>
   )

@@ -13,7 +13,7 @@ export default function NotesFeed ({ notes, showCategoryView }: Props) {
         {
           notes && notes.map((note: NoteData) => (
             <div className="flex" key={note.id}>
-              <Note data={note}  />
+              <Note data={note} />
             </div>
           ))
         }
