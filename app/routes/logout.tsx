@@ -2,8 +2,6 @@ import { ActionFunction, redirect } from '@remix-run/node';
 import { createServerClient } from '@supabase/auth-helpers-remix';
 
 export const action: ActionFunction = async ({ request }) => {
-  console.log('attempting logout!')
-  
   const response = new Response()
 
   const supabase = createServerClient(

@@ -53,7 +53,6 @@ export const loader: LoaderFunction = async ({ request, params }: LoaderArgs) =>
             }
           }
           
-          console.log(topicRecord)
           if (!topicRecord) {
             summary = await fetchTopicSummary(notesText)
             topicRecord = (await supabase.from('topics').insert({

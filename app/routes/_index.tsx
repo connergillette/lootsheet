@@ -72,10 +72,7 @@ export const action: ActionFunction = async ({ request }) => {
     const noteResponse = await supabase.from('notes').insert(note).select()
     if (!noteResponse.error) {
       if (attachments) {
-        await supabase.storage.from('note_attachments').upload(`${session.user.id}/${noteResponse.data[0].id}`, attachments)
-        // const bucketObject = await supabase.storage.from('note_attachments').list()
-        // const noteUpdateResponse = await supabase.from('notes').update({ attachment: bucketResponse.data?.path })
-        // console.log(bucketResponse)
+        supabase.storage.from('note_attachments').upload(`${session.user.id}/${noteResponse.data[0].id}`, attachments)
       }
       return redirect('/')
     }
@@ -129,7 +126,6 @@ export const loader: LoaderFunction = async ({ request }: LoaderArgs) => {
     for (const note of notesWithAttachments) {
       const file = await supabase.storage.from('note_attachments').createSignedUrl(`${session.user.id}/${note.id}`, 60)
       if (file && file.data) {
-        console.log(file.data.signedUrl)
         note.attachment = file.data.signedUrl
       }
     }

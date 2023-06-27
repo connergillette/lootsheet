@@ -31,11 +31,11 @@ export default function Nav({ signOut, session }: Props) {
         {
           session && (
             <>
-              <button className={`hover:bg-gray-200 bg-gray-100 hover:text-black rounded-md px-4 py-2 transition h-min text-gray-600`}>+</button>
+              {/* <button className={`hover:bg-gray-200 bg-gray-100 hover:text-black rounded-md px-4 py-2 transition h-min text-gray-600`}>+</button>
               <button className={`hover:bg-gray-100 hover:text-black rounded-md px-4 py-2 transition h-min text-gray-600`}>Work</button>
               <button className={`hover:bg-gray-100 hover:text-black rounded-md px-4 py-2 transition h-min text-gray-600`}>Personal</button>
               <button className={`hover:bg-gray-700 bg-gray-600 text-white rounded-md px-4 py-2 transition h-min`}>Pathfinder</button>
-              <div className="w-1 border-l-2 border-solid border-gray-100 align-middle h-1/2 my-2"></div>
+              <div className="w-1 border-l-2 border-solid border-gray-100 align-middle h-1/2 my-2"></div> */}
               <button className={`hover:bg-gray-100 hover:text-black rounded-md px-4 py-2 transition h-min text-gray-300`} onClick={() => signOut()}>Log out</button>
             </>
           )
