@@ -21,6 +21,10 @@ export interface CategoryMap {
   [key: string]: string[]
 }
 
+export interface CategorizedNotes {
+  [key: string]: NoteData[]
+}
+
 const categoryTerms : CategoryMap = {
   currency: ['pp', 'gp', 'sp', 'ep', 'cp', 'platinum', 'gold', 'silver', 'electrum', 'copper'],
   loot: ['gained', 'found', 'chest', 'loot'],
@@ -98,7 +102,7 @@ export const loader: LoaderFunction = async ({ request }: LoaderArgs) => {
   const notesResponse = await supabase.from('notes').select().eq('user_id', session.user.id).order('id', { ascending: false })
   const topicsResponse = await supabase.from('topics').select('name').eq('user_id', session.user.id).order('id', { ascending: false })
   
-  const categories: CategoryMap = {}
+  const categories: CategorizedNotes = {}
   let notes = []
   let topics = []
   let searchResults = []

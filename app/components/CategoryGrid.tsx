@@ -1,8 +1,9 @@
 import Section from '~/components/Section'
-import type { CategoryMap } from '~/routes/_index'
+import type { CategorizedNotes } from '~/routes/_index'
+import { NoteData } from './Note'
 
 interface Props {
-  categories: CategoryMap,
+  categories: CategorizedNotes,
   showCategoryView: boolean
 }
 

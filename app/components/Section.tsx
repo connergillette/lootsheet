@@ -3,7 +3,7 @@ import SectionHeader from './SectionHeader'
 
 interface Props {
   name: string,
-  items: object[]
+  items: NoteData[]
 }
 
 export default function Section({name, items}: Props) {
