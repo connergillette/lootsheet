@@ -41,17 +41,17 @@ export default function NoteEntryForm({ noteText, setNoteText, noteInputRef, top
             <button type="submit" className={`bg-gray-600 text-white rounded-md px-4 max-md:px-2 py-2 max-md:py-1 m-1 h-min whitespace-nowrap transition-opacity ${noteText ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>Save Note</button>
           </div>
         </div>
-        <div className="flex px-4">
-          <div className={`flex grow gap-2 h-6 ${noteTopicMatches.length > 0 ? 'opacity-100' : 'opacity-0'} transition`}>
+        <div className="flex max-md:flex-col max-md:gap-4 px-4">
+          <div className={`flex grow gap-2 h-6 ${noteTopicMatches.length > 0 ? 'opacity-100' : 'opacity-0'} transition w-full`}>
             {
               noteTopicMatches && (
-                noteTopicMatches.map((topicMatch: string) => <button key={topicMatch} type="button" className="bg-gray-200 rounded-lg px-2" onClick={() => autocomplete(topicMatch)}>{topicMatch}</button>)
+                  noteTopicMatches.map((topicMatch: string) => <button key={topicMatch} type="button" className="bg-gray-200 rounded-lg px-2 w-max" onClick={() => autocomplete(topicMatch)}>{topicMatch}</button>)
                 )
               }
           </div>
-          <div className="flex justify-end gap-2 align-middle">
+          <div className="flex justify-end max-md:justify-normal gap-2 align-middle w-full">
             <input name="attachments" type="file" accept='image/*' alt="Image upload" className={`self-center bg-gray-100 rounded-md px-2 py-1 h-full whitespace-nowrap transition-opacity`} />
-            <button type="button" onClick={() => setShowCategoryView(!showCategoryView)} className={`opacity-100 hover:opacity-90 rounded-md px-4 py-2 transition h-min ${showCategoryView ? 'bg-gray-600 text-white': 'bg-gray-100 text-gray-600'}`}>
+            <button type="button" onClick={() => setShowCategoryView(!showCategoryView)} className={`opacity-100 hover:opacity-90 rounded-md px-4 py-2 transition h-min ${showCategoryView ? 'bg-gray-600 text-white': 'bg-gray-100 text-gray-600'} whitespace-nowrap`}>
               {showCategoryView ? 'Hide Categories' : 'Show Categories'}
             </button>
           </div>
