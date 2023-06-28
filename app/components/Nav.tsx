@@ -14,7 +14,7 @@ export default function Nav({ signOut, session }: Props) {
   }
 
   return (
-    <div className="flex mx-auto align-middle">
+    <div className="flex align-middle">
       <a href="/" onMouseEnter={onHover} onMouseLeave={() => setHoverColor('')}>
         <div className={`font-bold text-2xl align-middle py-2 px-4 ${hoverColor ? hoverColor : 'text-gray-500'} transition`}>lootsheet</div>
       </a>

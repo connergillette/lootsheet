@@ -45,9 +45,9 @@ export default function NoteEntryForm({ noteText, setNoteText, noteInputRef, top
           <div className={`flex grow gap-2 h-6 ${noteTopicMatches.length > 0 ? 'opacity-100' : 'opacity-0'} transition w-full`}>
             {
               noteTopicMatches && (
-                  noteTopicMatches.map((topicMatch: string) => <button key={topicMatch} type="button" className="bg-gray-200 rounded-lg px-2 w-max" onClick={() => autocomplete(topicMatch)}>{topicMatch}</button>)
-                )
-              }
+                noteTopicMatches.map((topicMatch: string) => <button key={topicMatch} type="button" className="bg-gray-200 rounded-lg px-2 w-max" onClick={() => autocomplete(topicMatch)}>{topicMatch}</button>)
+              )
+            }
           </div>
           <div className="flex justify-end max-md:justify-normal gap-2 align-middle w-full">
             <input name="attachments" type="file" accept='image/*' alt="Image upload" className={`self-center bg-gray-100 rounded-md px-2 py-1 h-full whitespace-nowrap transition-opacity`} />

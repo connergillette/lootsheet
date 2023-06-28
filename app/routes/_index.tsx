@@ -160,7 +160,7 @@ export default function Index() {
   }, [notes, queryParsed])
 
   return (
-    <div className="w-full h-full max-md:h-full pb-24">
+    <div className="w-full h-full max-md:h-full pb-44">
       <NoteEntryForm 
         error={error}
         noteText={noteText}
