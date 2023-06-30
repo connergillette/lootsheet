@@ -8,7 +8,7 @@ interface Props {
 
 export default function NotesFeed ({ notes, showCategoryView }: Props) {
   return (
-    <div className={`flex flex-col overflow-y-scroll no-scrollbar px-2 ${showCategoryView ? 'max-md:max-h-[300px]' : 'max-md:h-[900px]'} mt-2`}>
+    <div className={`flex flex-col overflow-y-scroll no-scrollbar px-2 min-h-[400px] max-h-[1500px] ${showCategoryView ? 'max-md:max-h-[300px]' : 'max-md:h-[900px]'} mt-2`}>
       <div>
         {
           notes && notes.map((note: NoteData) => (

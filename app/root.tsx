@@ -76,10 +76,12 @@ export default function App() {
         <Meta />
         <Links />
       </head>
-      <body className="font-['Caladea'] overflow-hidden max-md:overflow-scroll w-screen h-screen flex my-6">
+      <body className="font-['Caladea'] overflow-hidden overflow-y-scroll w-screen flex">
         {/* TODO: Formalize single-page layout rules */}
-        <div className="w-8/12 min-w-[900px] max-md:w-11/12 max-md:min-w-[300px] mx-auto max-md:mt-2 pb-[80px] max-md:pb-0 max-md:h-full h-full flex flex-col">
+        <div className="w-full fixed bg-white/90 border-b-[1px] border-gray-100 border-solid h-12 flex justify-center">
           <Nav session={session} signOut={() => supabase.auth.signOut()} />
+        </div>
+        <div className="w-8/12 min-w-[900px] max-md:w-11/12 max-md:min-w-[300px] mx-auto max-md:mt-2 max-md:pb-0 max-md:h-full h-full flex flex-col">
           <Outlet context={{ supabase, session }} />
         </div>
         <ScrollRestoration />

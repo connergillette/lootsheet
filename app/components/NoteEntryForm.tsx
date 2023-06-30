@@ -26,7 +26,7 @@ export default function NoteEntryForm({ noteText, setNoteText, noteInputRef, top
     <>
       {error && <pre className="text-red-500">{error.toString()}</pre>}
       <Form method="post" encType="multipart/form-data">
-        <div className="flex px-4 w-full">
+        <div className="flex w-full">
           <div className="grow w-full">
             <textarea name="text"
               value={noteText}
@@ -41,7 +41,7 @@ export default function NoteEntryForm({ noteText, setNoteText, noteInputRef, top
             <button type="submit" className={`bg-gray-600 text-white rounded-md px-4 max-md:px-2 py-2 max-md:py-1 m-1 h-min whitespace-nowrap transition-opacity ${noteText ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>Save Note</button>
           </div>
         </div>
-        <div className="flex max-md:flex-col max-md:gap-4 px-4">
+        <div className="flex max-md:flex-col max-md:gap-4 px-4 max-md:px-0">
           <div className={`flex grow gap-2 h-6 ${noteTopicMatches.length > 0 ? 'opacity-100' : 'opacity-0'} transition w-full`}>
             {
               noteTopicMatches && (

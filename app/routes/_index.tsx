@@ -160,7 +160,7 @@ export default function Index() {
   }, [notes, queryParsed])
 
   return (
-    <div className="w-full h-full max-md:h-full pb-44">
+    <div className="w-full h-full max-md:h-full mt-16 mb-6">
       <NoteEntryForm 
         error={error}
         noteText={noteText}
@@ -170,8 +170,8 @@ export default function Index() {
         showCategoryView={showCategoryView}
         setShowCategoryView={setShowCategoryView} 
       />
-      <div className="flex max-md:flex-col h-full my-2 overflow-y-hidden">
-        <div className={`flex flex-col ${showCategoryView ? 'w-1/3 px-4' : 'w-full p-0'} transition-width rounded-md max-md:w-full`}>
+      <div className="flex max-md:flex-col h-full my-2 overflow-y-hidden max-md:overflow-y-scroll">
+        <div className={`flex flex-col ${showCategoryView ? 'w-1/3 px-4 max-md:px-0' : 'w-full p-0'} transition-width rounded-md max-md:w-full`}>
           <NotesSearch
             searchQuery={searchQuery}
             setSearchQuery={setSearchQuery} 

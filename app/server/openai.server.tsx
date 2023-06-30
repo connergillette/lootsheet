@@ -13,7 +13,7 @@ export const fetchTopicSummary = async (topicNotes: string[]) => {
       messages: [{ 
         role: "user",
         content: `\
-          Please combine my following notes (which are in reverse chronological order), without adding or omitting any details:\
+          Please combine my notes (which are in reverse chronological order), without adding or omitting any details. If there is only one note, please turn it into a complete sentence without modifying its meaning. Here are the notes:\
           ${
             topicNotes.join('\n')
           }

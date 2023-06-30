@@ -95,10 +95,13 @@ export const loader: LoaderFunction = async ({ request, params }: LoaderArgs) =>
 
 export default function Topic() {
   const { topicName, notes, summary, relatedTopics, error } = useLoaderData()
-  const notesWithAttachments = notes.filter((note: NoteData) => note.has_attachment)
+
+  let notesWithAttachments
+  
+  if (!error) notesWithAttachments = notes.filter((note: NoteData) => note.has_attachment)
 
   return (
-    <div className="flex flex-col gap-6 px-2 my-5">
+    <div className="flex flex-col gap-6 px-2 my-20">
       <h1 className="text-4xl font-bold">{topicName}</h1>
       <div className="flex max-md:flex-col gap-10">
         {error && (
@@ -113,10 +116,10 @@ export default function Topic() {
           <>
             <div className="w-2/3 max-md:w-full min-h-[200px]">
               { notesWithAttachments.length > 0 && (
-                <div className="grid grid-flow-row grid-cols-2 gap-4 pb-10">
+                <div className="grid grid-flow-row grid-cols-2 gap-4 pb-10 min-h-[400px] transition-height">
                   {
                     notesWithAttachments.map((note) => (
-                      <img src={note.attachment} alt={`Note ${note.id}`} key={`image-${note.id}`} className="w-min rounded-lg" />
+                      <img src={note.attachment} alt={`Note ${note.id}`} key={`image-${note.id}`} className="w-min rounded-lg max-h-[400px] bg-gray-100" />
                     ))
                   }
                 </div>
