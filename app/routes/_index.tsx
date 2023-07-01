@@ -70,12 +70,14 @@ export const action: ActionFunction = async ({ request }) => {
       user_id: session.user.id,
       has_attachment: !!attachments
     }
+
     const noteResponse = await supabase.from('notes').insert(note).select()
     if (!noteResponse.error) {
+      const noteData = noteResponse.data
       if (attachments) {
         supabase.storage.from('note_attachments').upload(`${session.user.id}/${noteResponse.data[0].id}`, attachments)
       }
-      return redirect('/')
+      return { noteData }
     }
 
     return noteResponse.error.message
@@ -150,12 +152,18 @@ export const loader: LoaderFunction = async ({ request }: LoaderArgs) => {
 
 export default function Index() {
   const { notes, topics, searchResults, queryParsed, categories, allAttachments } = useLoaderData()
-  const error = useActionData()
+  const actionData = useActionData()
   const noteInputRef = useRef()
   const [noteText, setNoteText] = useState('')
   const [queryIsDirty, setQueryIsDirty] = useState(false)
   const [searchQuery, setSearchQuery] = useState(queryParsed)
   const [showCategoryView, setShowCategoryView] = useState(true)
+
+  useEffect(() => {
+    if (actionData && actionData.noteData) {
+      notes.push(actionData.noteData)
+    }
+  }, [notes, actionData])
 
   useEffect(() => {
     setNoteText('')
@@ -166,7 +174,7 @@ export default function Index() {
   return (
     <div className="w-full h-full max-md:h-full mt-16 mb-6 pb-6">
       <NoteEntryForm 
-        error={error}
+        error={actionData && actionData.error}
         noteText={noteText}
         setNoteText={setNoteText}
         noteInputRef={noteInputRef}

@@ -67,7 +67,7 @@ export default function Note({ data, query }: Props) {
           </div>
           {
             data.has_attachment && data.attachment && (
-              <div className="h-min w-24 overflow-hidden rounded-lg place-self-end object-fill">
+              <div className="h-min w-24 overflow-hidden rounded-lg place-self-end object-fill bg-gray-100">
                 <Image url={data.attachment} aspect={'aspect-square'} />
               </div>
             )

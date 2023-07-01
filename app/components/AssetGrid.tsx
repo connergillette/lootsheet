@@ -11,7 +11,7 @@ export default function AssetGrid ({ attachments }: Params) {
       <SectionHeader>Assets</SectionHeader>
       {
         attachments.length > 0 && (
-          <div className="w-full grid grid-flow-row grid-cols-3 gap-2 py-4">
+          <div className="w-full grid grid-flow-row grid-cols-3 gap-2 pt-2">
             {
               attachments.map((url) => (
                 <div className="w-full h-full overflow-hidden rounded-lg" key={url} >
