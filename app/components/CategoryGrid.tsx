@@ -27,7 +27,7 @@ export default function CategoryGrid({ categories, showCategoryView }: Props) {
           Object.keys(categoryColors).map((categoryName) => {
             const color : string = `${categoryColors[categoryName]} text-white`
             return (
-              <button className={`hover:bg-gray-200 ${selectedCategory === categoryName ? color : ''} rounded-full px-4 py-1 transition h-min text-gray-600`} key={categoryName} type="button" onClick={() => setSelectedCategory(categoryName)}>{categoryName}</button>
+              <button className={`hover:bg-gray-200 ${selectedCategory === categoryName ? color : ''} rounded-md px-2 py-1 transition h-min text-gray-600`} key={categoryName} type="button" onClick={() => setSelectedCategory(categoryName)}>{categoryName}</button>
             )
           })
         }
