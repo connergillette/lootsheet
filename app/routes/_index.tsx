@@ -9,6 +9,7 @@ import CategoryGrid from '~/components/CategoryGrid'
 import NoteEntryForm from '~/components/NoteEntryForm'
 import NotesFeed from '~/components/NotesFeed'
 import NotesSearch from '~/components/NotesSearch'
+import AssetGrid from '~/components/AssetGrid'
 
 export const meta: V2_MetaFunction = () => {
   return [
@@ -108,6 +109,7 @@ export const loader: LoaderFunction = async ({ request }: LoaderArgs) => {
   const topicsResponse = await supabase.from('topics').select('name').eq('user_id', session.user.id).order('id', { ascending: false })
   
   const categories: CategorizedNotes = {}
+  let allAttachments: string[] = []
   let notes = []
   let topics = []
   let searchResults = []
@@ -123,10 +125,12 @@ export const loader: LoaderFunction = async ({ request }: LoaderArgs) => {
       searchResults = notes.filter((note: NoteData) => note.text.includes(queryParsed))
     }
     const notesWithAttachments = notes.filter((note: NoteData) => note.has_attachment)
+    allAttachments = []
     for (const note of notesWithAttachments) {
       const file = await supabase.storage.from('note_attachments').createSignedUrl(`${session.user.id}/${note.id}`, 60)
       if (file && file.data) {
         note.attachment = file.data.signedUrl
+        allAttachments.push(file.data.signedUrl)
       }
     }
 
@@ -139,13 +143,13 @@ export const loader: LoaderFunction = async ({ request }: LoaderArgs) => {
   }
 
 
-  return json({ notes, topics, searchResults, query, queryParsed, categories, session }, {
+  return json({ notes, topics, searchResults, query, queryParsed, categories, allAttachments, session }, {
     "Cache-Control": "public, s-maxage=60",
   })
 }
 
 export default function Index() {
-  const { notes, topics, searchResults, queryParsed, categories } = useLoaderData()
+  const { notes, topics, searchResults, queryParsed, categories, allAttachments } = useLoaderData()
   const error = useActionData()
   const noteInputRef = useRef()
   const [noteText, setNoteText] = useState('')
@@ -170,7 +174,7 @@ export default function Index() {
         showCategoryView={showCategoryView}
         setShowCategoryView={setShowCategoryView} 
       />
-      <div className="flex max-md:flex-col h-full my-2 overflow-y-hidden max-md:overflow-y-scroll gap-4">
+      <div className="flex max-md:flex-col h-full my-2 overflow-y-hidden max-md:overflow-y-scroll no-scrollbar gap-4">
         <div className={`flex flex-col ${showCategoryView ? 'w-1/3 max-md:px-0' : 'w-full p-0'} transition-width rounded-md max-md:w-full`}>
           <NotesSearch
             searchQuery={searchQuery}
@@ -183,11 +187,7 @@ export default function Index() {
           <NotesFeed notes={notes} showCategoryView={showCategoryView} />
         </div>
         <CategoryGrid categories={categories} showCategoryView={showCategoryView} />
-        <div className="w-1/3 h-full text-center bg-gray-100 rounded-lg">
-          <div className="p-5">
-            (Asset grid coming soon.)
-          </div>
-        </div>
+        <AssetGrid attachments={allAttachments} />
       </div>
     </div>
   );

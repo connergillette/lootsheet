@@ -21,12 +21,11 @@ export default function CategoryGrid({ categories, showCategoryView }: Props) {
   }
 
   return (
-    <div className={`${showCategoryView ? 'w-1/3 max-md:w-full p-5' : 'w-0 h-0'} transition-height transition-width min-h-[400px] max-h-[1500px] bg-gray-100 rounded-lg overflow-hidden max-md:overflow-y-scroll`}>
-      <div className="relative flex w-full gap-2">
+    <div className={`${showCategoryView ? 'w-1/3 max-md:w-full p-5' : 'w-0 h-0 hidden'} transition-height transition-width min-h-[400px] max-h-[1500px] bg-gray-100 rounded-lg overflow-hidden max-md:overflow-y-scroll no-scrollbar`}>
+      <div className="relative flex w-full gap-2 overflow-x-scroll no-scrollbar">
         {
           Object.keys(categoryColors).map((categoryName) => {
             const color : string = `${categoryColors[categoryName]} text-white`
-            const hover : string = `hover:${color}`
             return (
               <button className={`hover:bg-gray-200 ${selectedCategory === categoryName ? color : ''} rounded-full px-4 py-1 transition h-min text-gray-600`} key={categoryName} type="button" onClick={() => setSelectedCategory(categoryName)}>{categoryName}</button>
             )

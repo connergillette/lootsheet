@@ -1,4 +1,5 @@
 import { Suspense, useState } from 'react'
+import Image from './Image'
 
 export const categoryColors : object = {
   currency: 'bg-yellow-400',
@@ -30,8 +31,6 @@ interface Props {
 }
 
 export default function Note({ data, query }: Props) {
-  const [imageIsLoading, setImageIsLoading] = useState(true)
-  
   let highlightedText = <span>{data.text}</span>
 
   if (query) {
@@ -67,11 +66,9 @@ export default function Note({ data, query }: Props) {
             <div className="w-full">{highlightedText}</div>
           </div>
           {
-            data.has_attachment && (
-              <div className="aspect-square h-min w-24 overflow-hidden rounded-lg place-self-end">
-                <a href={data.attachment} target="_blank" rel="noreferrer" className={`h-24 w-24 justify-end ${imageIsLoading ? 'bg-gray-100 animate-pulse' : ''}`} >
-                  <img src={data.attachment} alt="Note attachment" className={`aspect-square object-cover hover:scale-105 transition rounded-lg bg-gray-100 ${imageIsLoading ? 'opacity-0' : 'opacity-100'}`} loading="lazy" onLoad={() => setImageIsLoading(false)}/>
-                </a>
+            data.has_attachment && data.attachment && (
+              <div className="h-min w-24 overflow-hidden rounded-lg place-self-end object-fill">
+                <Image url={data.attachment} aspect={'aspect-square'} />
               </div>
             )
           }

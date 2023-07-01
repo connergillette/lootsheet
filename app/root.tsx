@@ -76,7 +76,7 @@ export default function App() {
         <Meta />
         <Links />
       </head>
-      <body className="font-['Caladea'] overflow-hidden overflow-y-scroll w-screen h-screen pb-[200px] flex">
+      <body className="font-['Caladea'] overflow-hidden overflow-y-scroll no-scrollbar w-screen h-screen pb-[200px] flex">
         {/* TODO: Formalize single-page layout rules */}
         <div className="w-full fixed bg-white/90 border-b-[1px] border-gray-100 border-solid h-12 flex justify-center">
           <Nav session={session} signOut={() => supabase.auth.signOut()} />

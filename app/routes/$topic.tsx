@@ -5,6 +5,7 @@ import Note, { NoteData } from '~/components/Note'
 import { fetchTopicSummary } from '~/server/openai.server'
 import SectionHeader from '~/components/SectionHeader'
 import { createServerClient } from '@supabase/auth-helpers-remix'
+import Image from '~/components/Image'
 
 interface Props {
 
@@ -116,10 +117,10 @@ export default function Topic() {
           <>
             <div className="w-2/3 max-md:w-full min-h-[200px]">
               { notesWithAttachments.length > 0 && (
-                <div className="grid grid-flow-row grid-cols-2 gap-4 pb-10 min-h-[400px] transition-height">
+                <div className="grid grid-flow-row grid-cols-3 gap-4 pb-10 min-h-[400px] transition-height">
                   {
                     notesWithAttachments.map((note) => (
-                      <img src={note.attachment} alt={`Note ${note.id}`} key={`image-${note.id}`} className="w-min rounded-lg max-h-[400px] bg-gray-100" />
+                      <Image url={note.attachment} key={`image-${note.id}`} />
                     ))
                   }
                 </div>
