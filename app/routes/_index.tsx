@@ -1,5 +1,5 @@
 import { ActionFunction, LoaderArgs, LoaderFunction, V2_MetaFunction, json, redirect } from "@remix-run/node";
-import { Form, useActionData, useLoaderData } from '@remix-run/react'
+import { Form, Outlet, useActionData, useLoaderData } from '@remix-run/react'
 import { useEffect, useRef, useState } from 'react'
 import Note, { NewNote } from '~/components/Note'
 import type { NoteData } from '~/components/Note'
@@ -160,7 +160,7 @@ export default function Index() {
   }, [notes, queryParsed])
 
   return (
-    <div className="w-full h-full max-md:h-full mt-16 mb-6">
+    <div className="w-full h-full max-md:h-full mt-16 mb-6 pb-6">
       <NoteEntryForm 
         error={error}
         noteText={noteText}
@@ -170,8 +170,8 @@ export default function Index() {
         showCategoryView={showCategoryView}
         setShowCategoryView={setShowCategoryView} 
       />
-      <div className="flex max-md:flex-col h-full my-2 overflow-y-hidden max-md:overflow-y-scroll">
-        <div className={`flex flex-col ${showCategoryView ? 'w-1/3 px-4 max-md:px-0' : 'w-full p-0'} transition-width rounded-md max-md:w-full`}>
+      <div className="flex max-md:flex-col h-full my-2 overflow-y-hidden max-md:overflow-y-scroll gap-4">
+        <div className={`flex flex-col ${showCategoryView ? 'w-1/3 max-md:px-0' : 'w-full p-0'} transition-width rounded-md max-md:w-full`}>
           <NotesSearch
             searchQuery={searchQuery}
             setSearchQuery={setSearchQuery} 
@@ -183,6 +183,11 @@ export default function Index() {
           <NotesFeed notes={notes} showCategoryView={showCategoryView} />
         </div>
         <CategoryGrid categories={categories} showCategoryView={showCategoryView} />
+        <div className="w-1/3 h-full text-center bg-gray-100 rounded-lg">
+          <div className="p-5">
+            (Asset grid coming soon.)
+          </div>
+        </div>
       </div>
     </div>
   );
