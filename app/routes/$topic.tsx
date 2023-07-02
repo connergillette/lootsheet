@@ -134,7 +134,7 @@ export default function Topic() {
                     <div className="flex gap-2 pt-2 flex-wrap">
                       {
                         relatedTopics.map((topic) => (
-                          <a href={`/${encodeURIComponent(topic)}`} key={topic}>
+                          <a href={`/${topic.split(' ').join('+')}`} key={topic}>
                             <button key={topic} type="button" className="bg-gray-200 rounded-lg px-2">{topic}</button>
                           </a> 
                         ))
