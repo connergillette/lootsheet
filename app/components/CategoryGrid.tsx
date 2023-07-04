@@ -21,7 +21,7 @@ export default function CategoryGrid({ categories, showCategoryView }: Props) {
   }
 
   return (
-    <div className={`${showCategoryView ? 'w-1/3 max-md:w-full p-5' : 'w-0 h-0 hidden'} transition-height transition-width min-h-[400px] max-h-[1500px] bg-gray-100 rounded-lg overflow-hidden max-md:overflow-y-scroll no-scrollbar`}>
+    <div className={`${showCategoryView ? 'w-1/3 max-md:w-full p-5' : 'w-0 h-0 hidden'} transition-height transition-width min-h-[400px] max-md:min-h-[200px] max-h-[1500px] bg-gray-100 rounded-lg overflow-hidden max-md:overflow-y-scroll max-md:h-1/3 no-scrollbar`}>
       <div className="relative flex w-full gap-2 overflow-x-scroll no-scrollbar">
         {
           Object.keys(categoryColors).map((categoryName) => {

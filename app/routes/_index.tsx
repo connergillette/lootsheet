@@ -183,7 +183,7 @@ export default function Index() {
         setShowCategoryView={setShowCategoryView} 
       />
       <div className="flex max-md:flex-col h-full my-2 overflow-y-hidden max-md:overflow-y-scroll no-scrollbar gap-4">
-        <div className={`flex flex-col ${showCategoryView ? 'w-1/3 max-md:px-0' : 'w-full p-0'} transition-width rounded-md max-md:w-full`}>
+        <div className={`flex flex-col ${showCategoryView ? 'w-1/3 max-md:px-0' : 'w-full p-0'} transition-width rounded-md max-md:w-full max-md:h-1/3`}>
           <NotesSearch
             searchQuery={searchQuery}
             setSearchQuery={setSearchQuery} 
