@@ -129,7 +129,12 @@ export const loader: LoaderFunction = async ({ request }: LoaderArgs) => {
     const notesWithAttachments = notes.filter((note: NoteData) => note.has_attachment)
     allAttachments = []
     for (const note of notesWithAttachments) {
-      const file = await supabase.storage.from('note_attachments').createSignedUrl(`${session.user.id}/${note.id}`, 60)
+      const file = await supabase.storage.from('note_attachments').createSignedUrl(`${session.user.id}/${note.id}`, 60, {
+        transform: {
+          width: 100,
+          height: 100
+        }
+      })
       if (file && file.data) {
         note.attachment = file.data.signedUrl
         allAttachments.push(file.data.signedUrl)
