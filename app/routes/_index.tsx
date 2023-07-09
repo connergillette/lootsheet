@@ -107,14 +107,9 @@ export const loader: LoaderFunction = async ({ request }: LoaderArgs) => {
   const query = search.get('query') || ''
   const queryParsed = query.split('+').join(' ')
 
-  console.log('loading notes...')
   const notesResponse = await supabase.from('notes').select().eq('user_id', session.user.id).order('id', { ascending: false })
-  console.log('notes loaded.')
-  console.log('loading topics...')
   const topicsResponse = await supabase.from('topics').select('name').eq('user_id', session.user.id).order('id', { ascending: false })
-  console.log('topics loaded.')
   
-  console.log('processing notes...')
   const categories: CategorizedNotes = {}
   let allAttachments: string[] = []
   let notes = []
@@ -131,20 +126,19 @@ export const loader: LoaderFunction = async ({ request }: LoaderArgs) => {
     if (queryParsed) {
       searchResults = notes.filter((note: NoteData) => note.text.includes(queryParsed))
     }
-    const notesWithAttachments = notes.filter((note: NoteData) => note.has_attachment)
-    allAttachments = []
-    for (const note of notesWithAttachments) {
-      const file = await supabase.storage.from('note_attachments').createSignedUrl(`${session.user.id}/${note.id}`, 60, {
-        transform: {
-          width: 100,
-          height: 100
-        }
-      })
-      if (file && file.data) {
-        note.attachment = file.data.signedUrl
-        allAttachments.push(file.data.signedUrl)
-      }
-    }
+    // const notesWithAttachments = notes.filter((note: NoteData) => note.has_attachment)
+    // for (const note of notesWithAttachments) {
+    //   const file = await supabase.storage.from('note_attachments').createSignedUrl(`${session.user.id}/${note.id}`, 60, {
+    //     transform: {
+    //       width: 100,
+    //       height: 100
+    //     }
+    //   })
+    //   if (file && file.data) {
+    //     note.attachment = file.data.signedUrl
+    //     allAttachments.push(file.data.signedUrl)
+    //   }
+    // }
     
   } else {
     return { error: notesResponse.error }
@@ -153,7 +147,6 @@ export const loader: LoaderFunction = async ({ request }: LoaderArgs) => {
   if (!topicsResponse.error) {
     topics = topicsResponse.data.map((topic) => topic.name)
   }
-  console.log('done processing.')
 
   return json({ notes, topics, searchResults, query, queryParsed, categories, allAttachments, session }, {
     "Cache-Control": "public, s-maxage=60",
