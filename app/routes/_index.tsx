@@ -75,7 +75,7 @@ export const action: ActionFunction = async ({ request }) => {
     if (!noteResponse.error) {
       const noteData = noteResponse.data
       if (attachments) {
-        supabase.storage.from('note_attachments').upload(`${session.user.id}/${noteResponse.data[0].id}`, attachments)
+        await supabase.storage.from('note_attachments').upload(`${session.user.id}/${noteResponse.data[0].id}`, attachments)
       }
       return { noteData }
     }
@@ -126,20 +126,6 @@ export const loader: LoaderFunction = async ({ request }: LoaderArgs) => {
     if (queryParsed) {
       searchResults = notes.filter((note: NoteData) => note.text.includes(queryParsed))
     }
-    // const notesWithAttachments = notes.filter((note: NoteData) => note.has_attachment)
-    // for (const note of notesWithAttachments) {
-    //   const file = await supabase.storage.from('note_attachments').createSignedUrl(`${session.user.id}/${note.id}`, 60, {
-    //     transform: {
-    //       width: 100,
-    //       height: 100
-    //     }
-    //   })
-    //   if (file && file.data) {
-    //     note.attachment = file.data.signedUrl
-    //     allAttachments.push(file.data.signedUrl)
-    //   }
-    // }
-    
   } else {
     return { error: notesResponse.error }
   }
@@ -198,7 +184,7 @@ export default function Index() {
           <NotesFeed notes={notes} showCategoryView={showCategoryView} />
         </div>
         <CategoryGrid categories={categories} showCategoryView={showCategoryView} />
-        <AssetGrid attachments={allAttachments} />
+        <AssetGrid notes={notes} />
       </div>
     </div>
   );

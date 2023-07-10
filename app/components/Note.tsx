@@ -1,5 +1,6 @@
-import { Suspense, useState } from 'react'
+import { useEffect, useState } from 'react'
 import Image from './Image'
+import { useOutletContext } from '@remix-run/react'
 
 export const categoryColors : object = {
   currency: 'bg-yellow-400',
@@ -31,6 +32,27 @@ interface Props {
 }
 
 export default function Note({ data, query }: Props) {
+  const { supabase } = useOutletContext()
+  const [attachmentUrl, setAttachmentUrl] = useState()
+
+  useEffect(() => {
+    (async () => {
+      if (data.has_attachment) {
+        const {data: { session } } = await supabase.auth.getSession()
+
+        const file = await supabase.storage.from('note_attachments').createSignedUrl(`${session.user.id}/${data.id}`, 60, {
+          transform: {
+            width: 100,
+            height: 100
+          }
+        })
+        if (file && file.data) {
+          setAttachmentUrl(file.data.signedUrl)
+        }
+      }
+    })()
+  }, [data, supabase])
+
   let highlightedText = <span>{data.text}</span>
 
   if (query) {
@@ -66,9 +88,13 @@ export default function Note({ data, query }: Props) {
             <div className="w-full">{highlightedText}</div>
           </div>
           {
-            data.has_attachment && data.attachment && (
+            data.has_attachment && (
               <div className="h-min w-24 overflow-hidden rounded-lg place-self-end object-fill bg-gray-100">
-                <Image url={data.attachment} aspect={'aspect-square'} />
+                {
+                  attachmentUrl && (
+                    <Image url={attachmentUrl} aspect={'aspect-square'} />
+                  )
+                }
               </div>
             )
           }
