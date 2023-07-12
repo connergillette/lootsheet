@@ -10,6 +10,7 @@ import NoteEntryForm from '~/components/NoteEntryForm'
 import NotesFeed from '~/components/NotesFeed'
 import NotesSearch from '~/components/NotesSearch'
 import AssetGrid from '~/components/AssetGrid'
+import FilterPanel from '~/components/FilterPanel'
 
 export const meta: V2_MetaFunction = () => {
   return [
@@ -184,7 +185,7 @@ export default function Index() {
           <NotesFeed notes={notes} showCategoryView={showCategoryView} />
         </div>
         <CategoryGrid categories={categories} showCategoryView={showCategoryView} />
-        <AssetGrid notes={notes} />
+        <FilterPanel notes={notes} />
       </div>
     </div>
   );

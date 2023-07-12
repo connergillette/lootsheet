@@ -5,10 +5,11 @@ import { NoteData } from './Note'
 import { useOutletContext } from '@remix-run/react'
 
 interface Params {
-  notes: NoteData[]
+  notes: NoteData[],
+  isShowing: boolean
 }
 
-export default function AssetGrid ({ notes }: Params) {
+export default function AssetGrid ({ notes, isShowing }: Params) {
   const { supabase } = useOutletContext()
   const [attachments, setAttachments] = useState([])
   const [isLoading, setIsLoading] = useState(true)
@@ -37,8 +38,7 @@ export default function AssetGrid ({ notes }: Params) {
   }, [notes])
 
   return (
-    <div className="w-1/3 max-md:w-full h-full bg-gray-100 rounded-lg p-5">
-      <SectionHeader>Assets</SectionHeader>
+    <div className={`h-full bg-gray-100 rounded-lg ${isShowing ? `opacity-100` : `opacity-0 hidden`} transition-opacity`}>
       {
         isLoading && (
           <div className="text-center w-full text-lg animate-pulse my-10">
