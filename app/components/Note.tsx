@@ -84,7 +84,7 @@ export default function Note({ data, query }: Props) {
       >
         <div className="flex w-full gap-2">
           <div className="flex flex-col grow w-full">
-            <div className="text-xs opacity-50 z-0 w-full">{new Date(data.created_at).toDateString()}</div>
+            <div className="text-xs opacity-50 -z-10 w-full">{new Date(data.created_at).toDateString()}</div>
             <div className="w-full">{highlightedText}</div>
           </div>
           {
