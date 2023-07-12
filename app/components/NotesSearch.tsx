@@ -28,7 +28,7 @@ export default function NotesSearch({ searchQuery, setSearchQuery, queryIsDirty,
       <SearchForm
         updateQuery={updateQuery}
         searchQuery={searchQuery}
-        isLoading={isLoading} 
+        isLoading={isLoading}
         setIsLoading={setIsLoading}
         queryIsDirty={queryIsDirty}
       />
