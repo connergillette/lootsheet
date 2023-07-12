@@ -1,5 +1,5 @@
 import { Form } from '@remix-run/react'
-import { MutableRefObject, useEffect, useMemo, useState } from 'react'
+import { MutableRefObject, useEffect, useMemo, useRef, useState } from 'react'
 
 interface Props {
   error?: string,
@@ -16,6 +16,7 @@ export default function NoteEntryForm({ noteText, setNoteText, noteInputRef, top
   const noteTextWords = noteText.split(' ')
   const currentNoteFragment = noteTextWords[noteTextWords.length - 1]
   const noteTopicMatches = currentNoteFragment ? topics.filter((topic: string) => topic.substring(0, currentNoteFragment.length) === currentNoteFragment) : []
+  const formRef = useRef()
 
   useEffect(() => {
     setIsSubmitting(false)
@@ -27,10 +28,19 @@ export default function NoteEntryForm({ noteText, setNoteText, noteInputRef, top
     noteInputRef.current?.focus()
   }
 
+  const handleInputKey = (e) => {
+    if (e.keyCode === 13 && e.shiftKey === false) {
+      if (formRef.current) {
+        formRef.current.submit()
+        setIsSubmitting(true)
+      }
+    }
+  }
+
   return (
     <>
       {error && <pre className="text-red-500">{error.toString()}</pre>}
-      <Form method="post" encType="multipart/form-data" onSubmit={() => setIsSubmitting(true)} className="flex flex-col gap-2">
+      <Form method="post" encType="multipart/form-data" onSubmit={() => setIsSubmitting(true)} className="flex flex-col gap-2" ref={formRef}>
         <div className={`flex w-full rounded-lg transition-colors ${isSubmitting ? 'animate-pulse bg-gray-100' : ''}`}>
           <div className="grow w-full">
             <textarea name="text"
@@ -38,6 +48,7 @@ export default function NoteEntryForm({ noteText, setNoteText, noteInputRef, top
               onChange={(e) => setNoteText(e.target.value)}
               className="rounded-md py-2 px-4 w-full max-w-full bg-transparent focus:outline-none resize-none text-lg h-20 whitespace-break-spaces no-scrollbar"
               placeholder="Write a note here."
+              onKeyDown={(e) => handleInputKey(e)}
               ref={noteInputRef}
               autoFocus
               disabled={isSubmitting}
