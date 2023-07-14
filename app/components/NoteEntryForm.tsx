@@ -68,9 +68,9 @@ export default function NoteEntryForm({ noteText, setNoteText, noteInputRef, top
           </div>
           <div className="flex justify-end max-md:justify-normal gap-2 align-middle w-full">
             <input name="attachments" type="file" accept='image/*' alt="Image upload" className={`self-center bg-gray-100 rounded-md px-2 py-1 h-full whitespace-nowrap transition-opacity`} />
-            <button type="button" onClick={() => {setShowCategoryView(!showCategoryView)}} className={`opacity-100 hover:opacity-90 rounded-md px-4 py-2 transition h-min ${showCategoryView ? 'bg-gray-600 text-white': 'bg-gray-100 text-gray-600'} whitespace-nowrap`} disabled={isSubmitting}>
+            {/* <button type="button" onClick={() => {setShowCategoryView(!showCategoryView)}} className={`opacity-100 hover:opacity-90 rounded-md px-4 py-2 transition h-min ${showCategoryView ? 'bg-gray-600 text-white': 'bg-gray-100 text-gray-600'} whitespace-nowrap`} disabled={isSubmitting}>
               {showCategoryView ? 'Hide Categories' : 'Show Categories'}
-            </button>
+            </button> */}
           </div>
         </div>
       </Form>
