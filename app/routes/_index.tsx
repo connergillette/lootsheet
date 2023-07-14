@@ -11,6 +11,7 @@ import NotesFeed from '~/components/NotesFeed'
 import NotesSearch from '~/components/NotesSearch'
 import AssetGrid from '~/components/AssetGrid'
 import FilterPanel from '~/components/FilterPanel'
+import HomePage from '~/components/HomePage'
 
 export const meta: V2_MetaFunction = () => {
   return [
@@ -99,49 +100,49 @@ export const loader: LoaderFunction = async ({ request }: LoaderArgs) => {
   )
   const { data: { session }} = await supabase.auth.getSession()
 
-  if (!session) {
-    return redirect('/login')
-  }
+  if (session) {
+    const url = new URL(request.url)
+    const search = new URLSearchParams(url.search)
+    const query = search.get('query') || ''
+    const queryParsed = query.split('+').join(' ')
 
-  const url = new URL(request.url)
-  const search = new URLSearchParams(url.search)
-  const query = search.get('query') || ''
-  const queryParsed = query.split('+').join(' ')
-
-  const notesResponse = await supabase.from('notes').select().eq('user_id', session.user.id).order('id', { ascending: false })
-  const topicsResponse = await supabase.from('topics').select('name').eq('user_id', session.user.id).order('id', { ascending: false })
-  
-  const categories: CategorizedNotes = {}
-  let allAttachments: string[] = []
-  let notes = []
-  let topics = []
-  let searchResults = []
-  if (!notesResponse.error) {
-    notes = notesResponse.data
+    const notesResponse = await supabase.from('notes').select().eq('user_id', session.user.id).order('id', { ascending: false })
+    const topicsResponse = await supabase.from('topics').select('name').eq('user_id', session.user.id).order('id', { ascending: false })
     
-    const categoryNames = Object.keys(categoryTerms)
-    for (const category of categoryNames) {
-      categories[category] = notes.filter((note) => note.inferred_type === category)
+    const categories: CategorizedNotes = {}
+    let allAttachments: string[] = []
+    let notes = []
+    let topics = []
+    let searchResults = []
+    if (!notesResponse.error) {
+      notes = notesResponse.data
+      
+      const categoryNames = Object.keys(categoryTerms)
+      for (const category of categoryNames) {
+        categories[category] = notes.filter((note) => note.inferred_type === category)
+      }
+      
+      if (queryParsed) {
+        searchResults = notes.filter((note: NoteData) => note.text.includes(queryParsed))
+      }
+    } else {
+      return { error: notesResponse.error }
     }
     
-    if (queryParsed) {
-      searchResults = notes.filter((note: NoteData) => note.text.includes(queryParsed))
+    if (!topicsResponse.error) {
+      topics = topicsResponse.data.map((topic) => topic.name)
     }
-  } else {
-    return { error: notesResponse.error }
-  }
-  
-  if (!topicsResponse.error) {
-    topics = topicsResponse.data.map((topic) => topic.name)
+
+    return json({ notes, topics, searchResults, query, queryParsed, categories, allAttachments, session }, {
+      "Cache-Control": "public, s-maxage=60",
+    })
   }
 
-  return json({ notes, topics, searchResults, query, queryParsed, categories, allAttachments, session }, {
-    "Cache-Control": "public, s-maxage=60",
-  })
+  return json({})
 }
 
 export default function Index() {
-  const { notes, topics, searchResults, queryParsed, categories, allAttachments } = useLoaderData()
+  const { notes, topics, searchResults, queryParsed, categories, allAttachments, session } = useLoaderData()
   const actionData = useActionData()
   const noteInputRef = useRef()
   const [noteText, setNoteText] = useState('')
@@ -163,30 +164,41 @@ export default function Index() {
 
   return (
     <div className="w-full h-full max-md:h-min mt-16 mb-6 pb-6">
-      <NoteEntryForm 
-        error={actionData && actionData.error}
-        noteText={noteText}
-        setNoteText={setNoteText}
-        noteInputRef={noteInputRef}
-        topics={topics}
-        showCategoryView={showCategoryView}
-        setShowCategoryView={setShowCategoryView} 
-      />
-      <div className="flex max-md:flex-col h-full my-2 overflow-y-hidden max-md:overflow-y-scroll no-scrollbar gap-4">
-        <div className={`w-1/3 max-md:w-full transition-height transition-width min-h-[400px] max-md:min-h-[200px] max-h-[1500px] max-md:max-h-[800px] rounded-lg overflow-hidden max-md:overflow-y-scroll no-scrollbar`}>
-          <NotesSearch
-            searchQuery={searchQuery}
-            setSearchQuery={setSearchQuery} 
-            topics={topics} 
-            queryIsDirty={queryIsDirty}
-            setQueryIsDirty={setQueryIsDirty}
-            searchResults={searchResults}
+      {
+        session && (
+          <>
+            <NoteEntryForm 
+              error={actionData && actionData.error}
+              noteText={noteText}
+              setNoteText={setNoteText}
+              noteInputRef={noteInputRef}
+              topics={topics}
+              showCategoryView={showCategoryView}
+              setShowCategoryView={setShowCategoryView} 
             />
-          <NotesFeed notes={notes} showCategoryView={showCategoryView} />
-        </div>
-        <CategoryGrid categories={categories} showCategoryView={showCategoryView} />
-        <FilterPanel notes={notes} />
-      </div>
+            <div className="flex max-md:flex-col h-full my-2 overflow-y-hidden max-md:overflow-y-scroll no-scrollbar gap-4">
+              <div className={`w-1/3 max-md:w-full transition-height transition-width min-h-[400px] max-md:min-h-[200px] max-h-[1500px] max-md:max-h-[800px] rounded-lg overflow-hidden max-md:overflow-y-scroll no-scrollbar pb-10`}>
+                <NotesSearch
+                  searchQuery={searchQuery}
+                  setSearchQuery={setSearchQuery} 
+                  topics={topics} 
+                  queryIsDirty={queryIsDirty}
+                  setQueryIsDirty={setQueryIsDirty}
+                  searchResults={searchResults}
+                  />
+                <NotesFeed notes={notes} showCategoryView={showCategoryView} />
+              </div>
+              <CategoryGrid categories={categories} showCategoryView={showCategoryView} />
+              <FilterPanel notes={notes} />
+            </div>
+          </>
+        )
+      }
+      {
+        !session && (
+          <HomePage />
+          )
+        }
     </div>
   );
 }
