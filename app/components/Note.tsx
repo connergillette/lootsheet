@@ -41,10 +41,11 @@ export default function Note({ data, query }: Props) {
         const {data: { session } } = await supabase.auth.getSession()
 
         const file = await supabase.storage.from('note_attachments').createSignedUrl(`${session.user.id}/${data.id}`, 60, {
-          transform: {
-            width: 100,
-            height: 100
-          }
+          // TODO: This only works on a Supabase Pro project
+          // transform: {
+          //   width: 100,
+          //   height: 100
+          // }
         })
         if (file && file.data) {
           setAttachmentUrl(file.data.signedUrl)
