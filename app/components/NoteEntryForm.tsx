@@ -35,6 +35,12 @@ export default function NoteEntryForm({ noteText, setNoteText, noteInputRef, top
         setIsSubmitting(true)
       }
     }
+    if (e.keyCode === 9 && e.shiftKey === false) {
+      e.preventDefault()
+      if (noteTopicMatches.length > 0) {
+        autocomplete(noteTopicMatches[0])
+      }
+    }
   }
 
   return (

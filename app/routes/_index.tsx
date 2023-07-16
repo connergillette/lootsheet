@@ -197,8 +197,8 @@ export default function Index() {
       {
         !session && (
           <HomePage />
-          )
-        }
+        )
+      }
     </div>
   );
 }
