@@ -24,7 +24,7 @@ export default function NotesSearch({ searchQuery, setSearchQuery, queryIsDirty,
   }
 
   return (
-    <div className={`bg-gray-100 ${searchQuery && !queryIsDirty ? `h-[900px] max-md:h-[400px]` : `${searchQueryTopicMatches.length > 0 ? 'h-[76px] min-h-[76px]' : 'h-[48px] min-h-[48px]'}`} transition-height rounded-md overflow-hidden`}>
+    <div className={`bg-gray-100 ${searchQuery && !queryIsDirty ? `h-[900px] max-md:h-[400px]` : `${searchQueryTopicMatches.length > 0 ? 'h-[84px] min-h-[84px]' : 'h-[48px] min-h-[48px]'}`} transition-height rounded-md overflow-hidden`}>
       <SearchForm
         updateQuery={updateQuery}
         searchQuery={searchQuery}
@@ -35,9 +35,9 @@ export default function NotesSearch({ searchQuery, setSearchQuery, queryIsDirty,
       <div className={`flex gap-2 h-6 ${searchQueryTopicMatches.length > 0 ? 'opacity-100' : 'opacity-0'} transition mb-2 mx-2`}>
         {
           searchQueryTopicMatches && (
-            searchQueryTopicMatches.map((topicMatch: string) => (
+            searchQueryTopicMatches.map((topicMatch: string, index) => (
               <a href={`/${topicMatch.split(' ').join('+')}`} key={topicMatch}>
-                <button key={topicMatch} type="button" className="bg-gray-200 rounded-lg px-2">{topicMatch}</button>
+                <button key={topicMatch} type="button" className={`rounded-lg px-2 border-2 border-solid ${index !== 0 ? `border-gray-200` : `bg-gray-200 border-transparent` }`}>{topicMatch}</button>
               </a> 
             ))
           )
