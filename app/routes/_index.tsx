@@ -32,7 +32,7 @@ const categoryTerms : CategoryMap = {
   currency: ['pp', 'gp', 'sp', 'ep', 'cp', 'platinum', 'gold', 'silver', 'electrum', 'copper'],
   loot: ['gained', 'found', 'chest', 'loot'],
   encounter: ['fought', 'encountered', 'attacked', 'met with', 'talked with'],
-  information: ['learned', 'found out', 'researched', 'told that', 'is'],
+  information: ['learned', 'discovered', 'researched', 'told that', 'is'],
   general: []
 }
 
@@ -55,12 +55,15 @@ export const action: ActionFunction = async ({ request }) => {
 
     // TODO: Allow note to belong to multiple categories (e.g. currency + loot)
     let inferredType = 'general'
+    let categoryFound = false
     const categories = Object.keys(categoryTerms)
     for (const category of categories) {
+      if (categoryFound) break
       for (const term of categoryTerms[category]) {
         const words = text.toLowerCase().split(' ')
         if (words.includes(term)) {
           inferredType = category
+          categoryFound = true
           break
         }
       }
