@@ -7,10 +7,11 @@ import AssetGrid from './AssetGrid'
 import SessionList from './SessionList'
 
 interface Props {
-  notes: NoteData[]
+  notes: NoteData[],
+  sessions: object,
 }
 
-export default function FilterPanel ({ notes }: Props) {
+export default function FilterPanel ({ notes, sessions }: Props) {
   const [selectedFilter, setSelectedFilter] = useState('assets')
 
   const options = ['assets', 'sessions']
@@ -27,7 +28,7 @@ export default function FilterPanel ({ notes }: Props) {
         }
       </div>
       <AssetGrid notes={notes} isShowing={selectedFilter === 'assets'} />
-      <SessionList isShowing={selectedFilter === 'sessions'} />
+      <SessionList isShowing={selectedFilter === 'sessions'} sessions={sessions} />
     </div>
   )
 }

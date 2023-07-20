@@ -115,6 +115,7 @@ export const loader: LoaderFunction = async ({ request }: LoaderArgs) => {
     const categories: CategorizedNotes = {}
     let allAttachments: string[] = []
     let notes = []
+    let sessions = {}
     let topics = []
     let searchResults = []
     if (!notesResponse.error) {
@@ -128,6 +129,17 @@ export const loader: LoaderFunction = async ({ request }: LoaderArgs) => {
       if (queryParsed) {
         searchResults = notes.filter((note: NoteData) => note.text.includes(queryParsed))
       }
+
+      for (const note of notes) {
+        const date = new Date(note.created_at).toDateString()
+        if (Object.keys(sessions).includes(date)) {
+          sessions[date]?.push(note)
+        } else {
+          sessions[date] = [note]
+        }
+      }
+
+      console.log(Object.keys(sessions))
     } else {
       return { error: notesResponse.error }
     }
@@ -136,7 +148,7 @@ export const loader: LoaderFunction = async ({ request }: LoaderArgs) => {
       topics = topicsResponse.data.map((topic) => topic.name)
     }
 
-    return json({ notes, topics, searchResults, query, queryParsed, categories, allAttachments, session }, {
+    return json({ notes, topics, searchResults, query, queryParsed, categories, allAttachments, sessions, session }, {
       "Cache-Control": "public, s-maxage=60",
     })
   }
@@ -145,7 +157,7 @@ export const loader: LoaderFunction = async ({ request }: LoaderArgs) => {
 }
 
 export default function Index() {
-  const { notes, topics, searchResults, queryParsed, categories, allAttachments, session } = useLoaderData()
+  const { notes, topics, searchResults, queryParsed, categories, allAttachments, sessions, session } = useLoaderData()
   const actionData = useActionData()
   const noteInputRef = useRef()
   const [noteText, setNoteText] = useState('')
@@ -192,7 +204,7 @@ export default function Index() {
                 <NotesFeed notes={notes} showCategoryView={showCategoryView} />
               </div>
               <CategoryGrid categories={categories} showCategoryView={showCategoryView} />
-              <FilterPanel notes={notes} />
+              <FilterPanel notes={notes} sessions={sessions} />
             </div>
           </>
         )
