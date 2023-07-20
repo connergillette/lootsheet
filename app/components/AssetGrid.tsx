@@ -38,7 +38,7 @@ export default function AssetGrid ({ notes, isShowing }: Params) {
   }, [notes])
 
   return (
-    <div className={`h-full bg-gray-100 rounded-lg ${isShowing ? `opacity-100` : `opacity-0 hidden`} transition-opacity overflow-y-scroll pb-10`}>
+    <div className={`h-full bg-gray-100 rounded-lg ${isShowing ? `opacity-100` : `opacity-0 hidden`} transition-opacity overflow-y-scroll no-scrollbar pb-10`}>
       {
         isLoading && (
           <div className="text-center w-full text-lg animate-pulse my-10">
