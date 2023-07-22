@@ -138,8 +138,6 @@ export const loader: LoaderFunction = async ({ request }: LoaderArgs) => {
           sessions[date] = [note]
         }
       }
-
-      console.log(Object.keys(sessions))
     } else {
       return { error: notesResponse.error }
     }
