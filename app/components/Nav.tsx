@@ -16,14 +16,14 @@ export default function Nav({ signOut, session }: Props) {
   return (
     <div className="fixed flex align-middle w-8/12 min-w-[900px] max-md:w-11/12 max-md:min-w-[300px] mx-auto h-14 z-20">
       <a href="/" className="py-3" onMouseEnter={onHover} onMouseLeave={() => setHoverColor('')}>
-        <div className={`font-bold text-xl align-middle py-1 px-4 ${hoverColor ? hoverColor : 'text-gray-700'} transition`}>lootsheet</div>
+        <div className={`font-bold text-xl align-middle py-1 px-4 ${hoverColor ? hoverColor : 'text-gray-700'} transition`} data-gktag="gk-01-03">lootsheet</div>
       </a>
       {/* TODO: Determine navbar buttons */}
       <div className="flex justify-end align-middle gap-2 grow py-2">
         {
           !session && (
             <>
-              <a href="/login" className={`hover:bg-gray-100 rounded-md px-4 py-2 transition h-min`}>Log in</a>
+              <a href="/login" className={`hover:bg-gray-100 rounded-md px-4 py-2 transition h-min`} data-gktag="gk-01-01">Log in</a>
               <a href="/register" className={`hover:bg-yellow-300 bg-yellow-400 hover:text-gray-800 text-gray-900 rounded-md px-4 py-2 transition h-min font-bold`}>Sign up</a>
             </>
           )
