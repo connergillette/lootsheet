@@ -44,8 +44,8 @@ export default function Login() {
             <span>Password</span>
             <input name="password" type="password" className="h-10 px-4 py-2 bg-gray-100 rounded-md" required></input>
           </div>
-          <div className="max-w-4xl" data-gktag="gk-01-02">
-            <button type="submit" className={`px-4 py-2 rounded-md bg-gray-600 text-white ${isLoading ? 'opacity-40' : ''}`} disabled={isLoading}>Log in</button>
+          <div className="max-w-4xl">
+            <button type="submit" className={`px-4 py-2 rounded-md bg-gray-600 text-white ${isLoading ? 'opacity-40' : ''}`} disabled={isLoading} data-gktag="gk-01-01">Log in</button>
           </div>
         </div>
       </Form>
