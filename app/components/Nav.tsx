@@ -24,7 +24,7 @@ export default function Nav({ signOut, session }: Props) {
           !session && (
             <>
               <a href="/login" className={`hover:bg-gray-100 rounded-md px-4 py-2 transition h-min`} data-gktag="gk-01-01">Log in</a>
-              <a href="/register" className={`hover:bg-yellow-300 bg-yellow-400 hover:text-gray-800 text-gray-900 rounded-md px-4 py-2 transition h-min font-bold`}>Sign up</a>
+              <a href="/register" className={`hover:bg-yellow-300 bg-yellow-400 hover:text-gray-800 text-gray-900 rounded-md px-4 py-2 transition h-min font-bold`} data-gktag="gk-02-01">Sign up</a>
             </>
           )
         }

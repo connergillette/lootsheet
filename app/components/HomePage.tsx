@@ -14,7 +14,7 @@ export default function HomePage () {
         <img src={HeroImage} className="border-solid border-2 border-gray-200 rounded-lg" alt="An example usage of the note-taking tool Lootsheet" />
       </div>
       <div className="w-full text-center py-10 text-xl">
-        Made by <a href="https://linkedin.com/in/connergillette" target="_blank" rel="noreferrer" className="text-blue-400 hover:opacity-90 opacity-100 transition-opacity" data-gktag="gk-02-01">Conner Gillette</a>.
+        Made by <a href="https://linkedin.com/in/connergillette" target="_blank" rel="noreferrer" className="text-blue-400 hover:opacity-90 opacity-100 transition-opacity">Conner Gillette</a>.
       </div>
     </>
   )
