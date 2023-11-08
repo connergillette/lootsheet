@@ -11,7 +11,7 @@ export default function SessionList({ isShowing, sessions }: Props) {
           Object.keys(sessions).map((sessionDate) => {
             const sessionNoteCount = sessions[sessionDate].length
             return (
-              <div className="flex h-12 w-full bg-gray-300 rounded-md px-4 items-center" key={sessionDate}>
+              <div className="flex h-12 w-full bg-gray-200 rounded-md px-4 items-center" key={sessionDate}>
                 <div className="grow">
                   {sessionDate}
                 </div>

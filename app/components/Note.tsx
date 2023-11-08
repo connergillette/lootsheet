@@ -85,7 +85,14 @@ export default function Note({ data, query }: Props) {
       >
         <div className="flex w-full gap-2">
           <div className="flex flex-col grow w-full">
-            <div className="text-xs opacity-50 max-md:-z-10 w-full">{new Date(data.created_at).toDateString()}</div>
+            <div className="flex text-xs opacity-50 max-md:-z-10 w-full">
+              <span className="w-full">{new Date(data.created_at).toDateString()}</span>
+              {/* <div className="flex gap-2 hover:opacity-100 opacity-0 transition-opacity">
+                <button>Delete</button>
+                <button>Edit</button>
+                <button>Categorize</button>
+              </div> */}
+            </div>
             <div className="w-full">{highlightedText}</div>
           </div>
           {

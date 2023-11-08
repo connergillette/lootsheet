@@ -53,8 +53,9 @@ export const loader: LoaderFunction = async ({ request, params }: LoaderArgs) =>
               note.attachment = file.data.signedUrl
             }
           }
+          const oldTopicRecord = topicRecord
           
-          if (!topicRecord) {
+          if (!oldTopicRecord) {
             summary = await fetchTopicSummary(notesText)
             topicRecord = (await supabase.from('topics').insert({
               name: topicName,

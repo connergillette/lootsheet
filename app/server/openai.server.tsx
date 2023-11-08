@@ -2,6 +2,7 @@ import { Configuration, OpenAIApi } from 'openai'
 
 const configuration = new Configuration({
     apiKey: process.env.OPENAI_API_KEY,
+    organization: process.env.OPENAI_ORGANIZATION_ID,
 });
 
 const openai = new OpenAIApi(configuration)
@@ -20,9 +21,8 @@ export const fetchTopicSummary = async (topicNotes: string[]) => {
         `
       }],
     })
-  
     return response.data.choices[0].message.content
   } catch (e) {
-    console.log(e)
+    console.log(e.message)
   }
 }
