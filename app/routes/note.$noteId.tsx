@@ -1,6 +1,8 @@
 import { LoaderArgs, json } from '@remix-run/node'
 import { Form, useLoaderData } from '@remix-run/react'
 import { createServerClient } from '@supabase/auth-helpers-remix'
+import { useState } from 'react'
+import Button from '~/components/Button'
 import DeleteButton from '~/components/DeleteButton'
 
 export const loader = async ({ params, request }: LoaderArgs) => {
@@ -31,6 +33,13 @@ export const loader = async ({ params, request }: LoaderArgs) => {
 
 export default function NoteDetail() {
   const { note } = useLoaderData()
+  const [isDirty, setIsDirty] = useState(false)
+  const [noteContents, setNoteContents] = useState(note.text)
+
+  const updateNote = (e) => {
+    setIsDirty(true)
+    setNoteContents(e.target.value)
+  }
 
   return (
     <div className="w-full h-full max-md:h-min mt-16 mb-6 pb-6">
@@ -39,7 +48,7 @@ export default function NoteDetail() {
           <div className="self-center">{new Date(note.created_at).toLocaleString()}</div>
         </div>
         <div className="flex gap-4 w-full justify-end">
-          <button>Edit</button>
+          {/* <button onClick={() => setIsEditing(!isEditing)}>Edit</button> */}
           <button>Categorize</button>
           <Form action={`note/${note.id}/destroy`} method="post" onSubmit={(event) => {
             const response = confirm("Are you sure you want to delete this note?")
@@ -51,7 +60,12 @@ export default function NoteDetail() {
           </Form>
         </div>
       </div>
-      <pre className="max-w-full whitespace-pre-line py-10">{note.text}</pre>
+      <div className="h-full w-full py-10">
+        <textarea value={noteContents} className="w-full h-full rounded-md p-2" onChange={updateNote}></textarea>
+        <div className={`${isDirty ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'} transition-opacity`}>
+          <Button>Save</Button>
+        </div>
+      </div>
     </div>
   )
 }

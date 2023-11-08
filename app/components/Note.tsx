@@ -100,7 +100,6 @@ export default function Note({ data, query }: Props) {
                     }}>
                       <DeleteButton />
                     </Form>
-                    <button>Edit</button>
                     <button>Categorize</button>
                   </div>
                 </div>
