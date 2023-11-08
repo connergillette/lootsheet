@@ -36,7 +36,7 @@ export default function NotesSearch({ searchQuery, setSearchQuery, queryIsDirty,
         {
           searchQueryTopicMatches && (
             searchQueryTopicMatches.map((topicMatch: string, index) => (
-              <a href={`/${topicMatch.split(' ').join('+')}`} key={topicMatch}>
+              <a href={`/topic/${topicMatch.split(' ').join('+')}`} key={topicMatch}>
                 <button key={topicMatch} type="button" className={`rounded-lg px-2 border-2 border-solid ${index !== 0 ? `border-gray-200` : `bg-gray-200 border-transparent` }`}>{topicMatch}</button>
               </a> 
             ))

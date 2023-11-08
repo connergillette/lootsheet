@@ -21,7 +21,7 @@ export default function SearchForm({ searchQuery, isLoading, setIsLoading, updat
           autoComplete='off'
           />
         <a 
-          href={`/${searchQuery.split(' ').join('+')}`}
+          href={`/topic/${searchQuery.split(' ').join('+')}`}
           onClick={() => setIsLoading(true)}
           className={`bg-gray-600 text-white rounded-md px-4 max-md:px-2 \
             py-2 max-md:py-1 m-1 whitespace-nowrap transition-opacity \

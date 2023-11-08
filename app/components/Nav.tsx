@@ -16,7 +16,7 @@ export default function Nav({ signOut, session }: Props) {
   return (
     <div className="fixed flex align-middle w-8/12 min-w-[900px] max-md:w-11/12 max-md:min-w-[300px] mx-auto h-14 z-20">
       <a href="/" className="py-3" onMouseEnter={onHover} onMouseLeave={() => setHoverColor('')}>
-        <div className={`font-bold text-xl align-middle py-1 px-4 ${hoverColor ? hoverColor : 'text-gray-700'} transition relative`} data-gktag="gk-01-02">lootsheet</div>
+        <div className={`font-bold text-xl align-middle py-1 ${hoverColor ? hoverColor : 'text-gray-700'} transition relative`} data-gktag="gk-01-02">lootsheet</div>
       </a>
       {/* TODO: Determine navbar buttons */}
       <div className="flex justify-end align-middle gap-2 grow py-2">
