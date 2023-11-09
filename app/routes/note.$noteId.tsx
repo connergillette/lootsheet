@@ -1,5 +1,5 @@
 import { LoaderArgs, json } from '@remix-run/node'
-import { Form, useLoaderData } from '@remix-run/react'
+import { Form, useActionData, useLoaderData } from '@remix-run/react'
 import { createServerClient } from '@supabase/auth-helpers-remix'
 import { useState } from 'react'
 import Button from '~/components/Button'
@@ -33,6 +33,7 @@ export const loader = async ({ params, request }: LoaderArgs) => {
 
 export default function NoteDetail() {
   const { note } = useLoaderData()
+  const actionData = useActionData()
   const [isDirty, setIsDirty] = useState(false)
   const [noteContents, setNoteContents] = useState(note.text)
 
@@ -49,8 +50,8 @@ export default function NoteDetail() {
         </div>
         <div className="flex gap-4 w-full justify-end">
           {/* <button onClick={() => setIsEditing(!isEditing)}>Edit</button> */}
-          <button>Categorize</button>
-          <Form action={`note/${note.id}/destroy`} method="post" onSubmit={(event) => {
+          <button className="bg-transparent hover:bg-gray-100 transition-colors py-1 px-2 rounded-md">Categorize</button>
+          <Form action={`destroy`} method="post" onSubmit={(event) => {
             const response = confirm("Are you sure you want to delete this note?")
             if (!response) {
               event.preventDefault()
@@ -60,12 +61,18 @@ export default function NoteDetail() {
           </Form>
         </div>
       </div>
-      <div className="h-full w-full py-10">
-        <textarea value={noteContents} className="w-full h-full rounded-md p-2" onChange={updateNote}></textarea>
-        <div className={`${isDirty ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'} transition-opacity`}>
-          <Button>Save</Button>
+      <Form action={`update`} method="post" className="h-full w-full" onSubmit={() => { if (!actionData.error) {
+        setIsDirty(false)
+      }}}>
+        <div className="h-full w-full py-10">
+          { actionData && JSON.stringify(actionData) }
+              <label><textarea value={noteContents} name="noteContents" className="w-full h-full rounded-md p-2" onChange={updateNote} required></textarea></label>
+              <div className={`${isDirty ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'} transition-opacity`}>
+                {/* TODO: Implement update functionality for note changes */}
+                  <Button>Save</Button>
+              </div>
         </div>
-      </div>
+      </Form>
     </div>
   )
 }

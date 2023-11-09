@@ -92,6 +92,7 @@ export default function Note({ data, query }: Props) {
                 <div className="flex text-xs max-md:-z-10 w-full">
                   <span className="w-full">{new Date(data.created_at).toDateString()}</span>
                   <div className={`flex gap-2 ${showToolbar ? 'opacity-100' : 'opacity-0 pointer-events-none'} transition-opacity z-10`}>
+                    <button>Categorize</button>
                     <Form action={`note/${data.id}/destroy`} method="post" onSubmit={(event) => {
                       const response = confirm("Are you sure you want to delete this note?")
                       if (!response) {
@@ -100,7 +101,6 @@ export default function Note({ data, query }: Props) {
                     }}>
                       <DeleteButton />
                     </Form>
-                    <button>Categorize</button>
                   </div>
                 </div>
                 
