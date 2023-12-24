@@ -69,6 +69,8 @@ export const action: ActionFunction = async ({ request }) => {
       }
     }
 
+    // TODO: Manage finding / updating sessions
+
     const note : NewNote = {
       text: text?.toString() || '',
       inferred_type: inferredType,
